@@ -1,27 +1,26 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace RussianNationalMessengerClient.Models;
 
-public partial class Chat
+public class Chat
 {
-    [Key]
     [JsonPropertyName("id")]
-    public Guid Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
 
     [JsonPropertyName("name")]
-    public string Name { get; set; }
-
+    public string? Name 
+    {
+        get => string.IsNullOrEmpty(field) ? Members[0] : Name;
+        set;
+    }
+    
     [JsonPropertyName("isGroup")]
     public bool IsGroup { get; set; }
 
     [JsonPropertyName("createdAt")]
     public DateTime CreatedAt { get; set; }
 
-    [JsonIgnore]
-    public ObservableCollection<Message> Messages { get; set; }
-
-    public override string ToString() =>
-        Name;
+    // участники
+    [JsonPropertyName("members")]
+    public List<string> Members { get; set; }
 }

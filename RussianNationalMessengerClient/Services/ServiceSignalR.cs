@@ -14,16 +14,13 @@ public class ServiceSignalR : IAsyncDisposable
     public ObservableCollection<Chat> Chats = [];
     private static HubConnection? _connection;
     private readonly HttpClient _httpClient;
-    public static ServiceSignalR? SSR { get; private set; } = null;
 
     public ServiceSignalR()
     {
         _httpClient = new()
         {
             Timeout = TimeSpan.FromSeconds(30)
-        };
-
-        SSR = this;
+        };        
     }
 
     public static bool IsHubConnect()

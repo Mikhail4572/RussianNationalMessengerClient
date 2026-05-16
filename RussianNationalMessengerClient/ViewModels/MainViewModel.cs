@@ -33,8 +33,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     public MainViewModel() 
     {
-        Chats = [.. ServiceSignalR.SSR!.Chats];
-        ServiceSignalR.SSR.Chats.CollectionChanged += ChatMembers_CollectionChanged;
+        App.CurrentConnectToSSR.Chats.CollectionChanged += ChatMembers_CollectionChanged;
     }
 
     private void ChatMembers_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

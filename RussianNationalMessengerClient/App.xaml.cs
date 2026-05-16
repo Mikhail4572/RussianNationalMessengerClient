@@ -1,12 +1,12 @@
-﻿using System.Configuration;
+﻿using RussianNationalMessengerClient.Services;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 
 namespace RussianNationalMessengerClient;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
+
 public partial class App : Application
 {
+    public static ServiceSignalR CurrentConnectToSSR { get; set; }
 }

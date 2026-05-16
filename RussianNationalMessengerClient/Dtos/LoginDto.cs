@@ -7,10 +7,10 @@ namespace RussianNationalMessengerClient.Dtos;
 public class LoginDto : INotifyPropertyChanged
 {
     [JsonPropertyName("username")]
-    public string UserName { get; set; } = "dima";
+    public string UserName { get; set; } = "mikhail";
 
     [JsonPropertyName("password")]
-    public string Password { get; set; } = "2222";
+    public string Password { get; set; } = "1111";
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

@@ -16,11 +16,12 @@ public class AuthViewModel : INotifyPropertyChanged
 
     public ICommand LoginCommand => new RelayCommand(async _ =>
     {
+        Progress<int> progress = new(value => Value = value);
         try
         {
-            Progress<int> progress = new(value => Value = value);
-            ServiceSignalR service = new();
-            await service.AuthorizationAsync(Login.UserName, Login.Password, progress);
+            App.CurrentConnectToSSR = new();
+
+            await App.CurrentConnectToSSR.AuthorizationAsync(Login.UserName, Login.Password, progress);
 
             if (ServiceSignalR.IsHubConnect())
             {

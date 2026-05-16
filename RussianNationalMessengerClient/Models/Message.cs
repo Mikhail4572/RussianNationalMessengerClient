@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace RussianNationalMessengerClient.Models;
 
 public class Message
 {
-    [Key]
     [JsonPropertyName("id")]
-    public Guid Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
 
     [JsonPropertyName("chatId")]
-    public Guid ChatId { get; set; }
+    public string ChatId { get; set; }
 
     [JsonPropertyName("author")]
     public string Author { get; set; }
@@ -21,11 +17,5 @@ public class Message
     public string Content { get; set; }
 
     [JsonPropertyName("sentAt")]
-    public DateTime SentAt { get; set; }
-
-    [JsonPropertyName("isEdited")]
-    public bool IsEdited { get; set; }
-
-    [JsonPropertyName("isDeleted")]
-    public bool IsDeleted { get; set; }
+    public DateTime SentAt { get; set; } = DateTime.UtcNow;
 }
