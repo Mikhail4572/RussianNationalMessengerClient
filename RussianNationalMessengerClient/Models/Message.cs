@@ -18,4 +18,10 @@ public class Message
 
     [JsonPropertyName("sentAt")]
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
+
+    [JsonPropertyName("isEdited")]
+    public bool IsEdited { get; set; }
+
+    [JsonPropertyName("isDeleted")]
+    public bool IsDeleted { get; set; }
 }

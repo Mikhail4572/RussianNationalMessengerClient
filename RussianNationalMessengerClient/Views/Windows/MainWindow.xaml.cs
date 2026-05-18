@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RussianNationalMessengerClient.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -10,16 +11,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace RussianNationalMessengerClient.Views.Windows
+namespace RussianNationalMessengerClient.Views.Windows;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindow(MainViewModel vm)
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        DataContext = vm;
     }
 }

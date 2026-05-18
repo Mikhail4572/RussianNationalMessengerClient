@@ -8,13 +8,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RussianNationalMessengerClient.Views.Windows;
+namespace RussianNationalMessengerClient.Views.Pages;
 
-public partial class AuthWindow : Window
+/// <summary>
+/// Логика взаимодействия для ChatsPage.xaml
+/// </summary>
+public partial class ChatsPage : UserControl
 {
-    public AuthWindow()
+    public ChatsPage()
     {
         InitializeComponent();
     }

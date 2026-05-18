@@ -12,56 +12,21 @@ using RussianNationalMessengerClient.Classes;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
-public class MainViewModel : INotifyPropertyChanged
+public class MainViewModel : ViewModelBase
 {
-    public ObservableCollection<Chat> Chats { get; set; }
-
-    public Page FrChatContent
+    public ViewModelBase CurrentViewModel
     {
         get => field;
         set
         {
             field = value;
-            OnPropertyChanged(nameof(FrChatContent));
+            OnPropertyChanged(nameof(CurrentViewModel));
         }
     }
 
-    public ICommand ShowDialogCommand => new RelayCommand(_ =>
+ 
+    public MainViewModel(AuthViewModel authViewModel) 
     {
-
-    });
-
-    public MainViewModel() 
-    {
-        App.CurrentConnectToSSR.Chats.CollectionChanged += ChatMembers_CollectionChanged;
+        CurrentViewModel = authViewModel;
     }
-
-    private void ChatMembers_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                if (e.NewItems is not null && e.NewItems.Count > 0 && e.NewItems[0] is Chat addChat)
-                {
-                    Chats.Add(addChat);
-                }
-                break;
-
-            case NotifyCollectionChangedAction.Remove:
-                if (e.OldItems is not null && e.OldItems.Count > 0 && e.OldItems[0] is Chat removeChat)
-                {
-                    Chats.Remove(removeChat);
-                }
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    public void OnPropertyChanged(string? propertyName = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
 }

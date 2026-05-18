@@ -9,11 +9,12 @@ using System.Windows;
 
 namespace RussianNationalMessengerClient.Services;
 
-public class ServiceSignalR : IAsyncDisposable
+public class ServiceSignalR 
 {
-    public ObservableCollection<Chat> Chats = [];
-    private static HubConnection? _connection;
+    public HubConnection Connection { get; private set; }
     private readonly HttpClient _httpClient;
+
+    public event Action<Chat>? OnChat;
 
     public ServiceSignalR()
     {
@@ -21,14 +22,6 @@ public class ServiceSignalR : IAsyncDisposable
         {
             Timeout = TimeSpan.FromSeconds(30)
         };        
-    }
-
-    public static bool IsHubConnect()
-    {
-        if (_connection is null)
-            return false;
-
-        return _connection.State == HubConnectionState.Connected;
     }
 
     private async Task<string> Login(string username, string password)
@@ -62,7 +55,7 @@ public class ServiceSignalR : IAsyncDisposable
 
         progress?.Report(40);
 
-        _connection = await ConnectToHub(token);
+        Connection = await ConnectToHub(token);
 
         progress?.Report(100);
     }
@@ -79,12 +72,12 @@ public class ServiceSignalR : IAsyncDisposable
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                var chat = Chats.FirstOrDefault(x => x.Id == msg.ChatId);
+              //  var chat = App.Chats.FirstOrDefault(x => x.Id == msg.ChatId);
 
-                if (chat == null)
-                    return;
+                //if (chat == null)
+                //    return;
 
-                chat.Messages.Add(msg);
+                //chat.Messages.Add(msg);
             });
         });
 
@@ -92,11 +85,10 @@ public class ServiceSignalR : IAsyncDisposable
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                Chats.Clear();
                 foreach (var item in chatMessagesDto)
                 {
                     item.Chat.Messages = [.. item.Messages];
-                    Chats.Add(item.Chat);
+                   // App.Chats.Add(item.Chat);
                 }
             });
         });
@@ -109,21 +101,12 @@ public class ServiceSignalR : IAsyncDisposable
 
     private async Task Connection_Closed(Exception? e)
     {
-        MessageBox.Show($"соединение разорванно\n{e?.Message}\nState is {_connection?.State.ToString()}");
-        await DisposeAsync();
+        MessageBox.Show($"соединение разорванно\n{e?.Message}\nState is {Connection?.State.ToString()}");
     }
 
     public async Task SendMessage(Guid chatId, string message)
     {
-        if (_connection is not null)
-            await _connection.InvokeAsync("SendMessage", chatId, message);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        _httpClient.Dispose();
-
-        if (_connection is not null)
-            await _connection.DisposeAsync();
+        if (Connection is not null)
+            await Connection.InvokeAsync("SendMessage", chatId, message);
     }
 }

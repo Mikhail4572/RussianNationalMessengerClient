@@ -4,11 +4,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Windows"
+        xmlns:viewModels="clr-namespace:RussianNationalMessengerClient.ViewModels"
+        xmlns:views="clr-namespace:RussianNationalMessengerClient.Views.Pages"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    
-    <Grid ColumnDefinitions="*, 4*">
-        <Border BorderBrush="gray" BorderThickness="0 0 2 0">
+    <Window.Resources>
+
+        <DataTemplate
+            DataType="{x:Type viewModels:AuthViewModel}">
+
+            <views:AuthPage/>
+        </DataTemplate>
+        
+        <DataTemplate
+            DataType="{x:Type viewModels:ChatsViewModel}">
+
+            <views:ChatsPage/>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Grid>
+        <ContentControl
+            Content="{Binding CurrentViewModel}"/>
+    </Grid>
+    <!--<Border BorderBrush="gray" BorderThickness="0 0 2 0">
             <Grid RowDefinitions="auto, *">
                 <Grid ColumnDefinitions="*, *, *" Margin="5">
                     <Button HorizontalAlignment="Left">Меню</Button>
@@ -29,6 +49,6 @@
             </Grid>
         </Border>
 
-        <Frame Content="{Binding FrChatContent}" Grid.Column="1" NavigationUIVisibility="Hidden"/>
-    </Grid>
+    -->
+        
 </Window>

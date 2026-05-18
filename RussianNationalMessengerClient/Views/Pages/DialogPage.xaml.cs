@@ -11,16 +11,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RussianNationalMessengerClient.Views.Pages
+namespace RussianNationalMessengerClient.Views.Pages;
+
+public partial class DialogPage : UserControl
 {
-    /// <summary>
-    /// Логика взаимодействия для DialogPage.xaml
-    /// </summary>
-    public partial class DialogPage : Page
+    public DialogPage()
     {
-        public DialogPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

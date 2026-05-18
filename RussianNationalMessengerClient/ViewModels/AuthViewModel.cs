@@ -1,6 +1,7 @@
 ﻿using RussianNationalMessengerClient.Views.Windows;
 using RussianNationalMessengerClient.Services;
 using RussianNationalMessengerClient.Classes;
+using Microsoft.AspNetCore.SignalR.Client;
 using RussianNationalMessengerClient.Dtos;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -9,7 +10,7 @@ using System.Windows;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
-public class AuthViewModel : INotifyPropertyChanged
+public class AuthViewModel : ViewModelBase
 {
     // закрытие приложения
     public ICommand CloseCommand => new RelayCommand(_ => App.Current.Shutdown());
@@ -19,22 +20,10 @@ public class AuthViewModel : INotifyPropertyChanged
         Progress<int> progress = new(value => Value = value);
         try
         {
-            App.CurrentConnectToSSR = new();
+            await _service.AuthorizationAsync(Login.UserName, Login.Password, progress);
 
-            await App.CurrentConnectToSSR.AuthorizationAsync(Login.UserName, Login.Password, progress);
-
-            if (ServiceSignalR.IsHubConnect())
-            {
-                MainWindow mainWindow = new()
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                    DataContext = new MainViewModel()
-                };
-
-                mainWindow.Show();
-
-                App.Current.Windows.OfType<AuthWindow>().FirstOrDefault()?.Close();
-            }
+            if (_service.Connection.State == HubConnectionState.Connected)
+                _navigation.NavigateTo<ChatsViewModel>();
         }
         catch (HttpRequestException ex)
         {
@@ -71,10 +60,14 @@ public class AuthViewModel : INotifyPropertyChanged
         }
     } = new();
 
-    public AuthViewModel() { }
+    private readonly ServiceSignalR _service;
+    private readonly NavigationService _navigation;
+
+    public AuthViewModel(ServiceSignalR service, NavigationService navigation)
+    {
+        _service = service;
+        _navigation = navigation;
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    public void OnPropertyChanged(string? propertyName = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

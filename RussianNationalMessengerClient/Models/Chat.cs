@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 
 namespace RussianNationalMessengerClient.Models;
 
@@ -23,4 +24,7 @@ public class Chat
     // участники
     [JsonPropertyName("members")]
     public List<string> Members { get; set; }
+
+    [JsonIgnore]
+    public ObservableCollection<Message> Messages { get; set; }
 }
