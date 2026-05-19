@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using RussianNationalMessengerClient.Dtos;
 using RussianNationalMessengerClient.Models;
+using RussianNationalMessengerClient.ViewModels;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,16 +13,25 @@ namespace RussianNationalMessengerClient.Services;
 public class ServiceSignalR 
 {
     public HubConnection Connection { get; private set; }
+
+    private readonly MessengerState _messengerState;
+
     private readonly HttpClient _httpClient;
 
-    public event Action<Chat>? OnChat;
+    //на получение списка сообщений
+    public event Action<List<Message>>? OnMessages;
 
-    public ServiceSignalR()
+    //на получение сообщения
+    public event Action<Message>? OnMessage;
+
+    public ServiceSignalR(MessengerState messengerState)
     {
         _httpClient = new()
         {
             Timeout = TimeSpan.FromSeconds(30)
-        };        
+        };
+
+        _messengerState = messengerState;
     }
 
     private async Task<string> Login(string username, string password)
@@ -68,28 +78,43 @@ public class ServiceSignalR
             .WithAutomaticReconnect()
             .Build();
 
-        connection.On<Message>("ReceiveMessage", msg =>
+        connection.On<List<Message>>("onMessages", messages =>
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-              //  var chat = App.Chats.FirstOrDefault(x => x.Id == msg.ChatId);
+                OnMessages?.Invoke(messages);
 
-                //if (chat == null)
-                //    return;
-
-                //chat.Messages.Add(msg);
             });
         });
 
-        connection.On<List<ChatMessagesDto>>("OnChatMessages", chatMessagesDto =>
+        connection.On<Message>("onMessage", msg =>
         {
+            // добавить изменение LastMessage в Chat
             App.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var item in chatMessagesDto)
+                //OnMessage?.Invoke(msg)
+                ChatViewModel? chat = _messengerState.GetChat(msg.ChatId);
+
+                if (chat is null)
+                    return;
+
+                chat.Chat.LastMessage = new()
                 {
-                    item.Chat.Messages = [.. item.Messages];
-                   // App.Chats.Add(item.Chat);
-                }
+                    Author = msg.Author,
+                    Content = msg.Content,
+                    MessageId = msg.Id,
+                    SentAt = msg.SentAt
+                };
+
+                chat.Messages.Add(msg);
+            });
+        });
+
+        connection.On<List<Chat>>("onChats", chats =>
+        {
+            App.Current.Dispatcher.Invoke(() => 
+            {
+                _messengerState.LoadChats(chats);
             });
         });
 
@@ -99,12 +124,13 @@ public class ServiceSignalR
         return connection;
     }
 
-    private async Task Connection_Closed(Exception? e)
-    {
-        MessageBox.Show($"соединение разорванно\n{e?.Message}\nState is {Connection?.State.ToString()}");
-    }
+    public async Task GetChatsAsync() =>
+        await Connection.SendAsync("GetChats");
 
-    public async Task SendMessage(Guid chatId, string message)
+    private async Task Connection_Closed(Exception? e) =>
+        MessageBox.Show($"соединение разорванно\n{e?.Message}\nState is {Connection?.State.ToString()}");
+
+    public async Task SendMessage(string chatId, string message)
     {
         if (Connection is not null)
             await Connection.InvokeAsync("SendMessage", chatId, message);

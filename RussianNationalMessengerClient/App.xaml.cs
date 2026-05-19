@@ -21,8 +21,11 @@ public partial class App : Application
 
         Services = services.BuildServiceProvider();
 
-        MainWindow mainWindow = Services.GetRequiredService<MainWindow>();
+        NavigationService navigation = Services.GetRequiredService<NavigationService>();
 
+        navigation.NavigateTo<AuthViewModel>();
+
+        MainWindow mainWindow = Services.GetRequiredService<MainWindow>();
 
         mainWindow.Show();
     }
@@ -35,13 +38,12 @@ public partial class App : Application
 
         services.AddSingleton<NavigationService>();
 
+
         // viewmodels
-        
-        services.AddSingleton<MainViewModel>();
 
         services.AddTransient<AuthViewModel>();
 
-        services.AddTransient<ChatsViewModel>();
+        services.AddSingleton<MessengerState>();
 
         services.AddSingleton<MainWindow>();
 

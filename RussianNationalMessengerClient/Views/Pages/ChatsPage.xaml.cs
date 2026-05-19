@@ -13,9 +13,6 @@ using System.Windows.Shapes;
 
 namespace RussianNationalMessengerClient.Views.Pages;
 
-/// <summary>
-/// Логика взаимодействия для ChatsPage.xaml
-/// </summary>
 public partial class ChatsPage : UserControl
 {
     public ChatsPage()

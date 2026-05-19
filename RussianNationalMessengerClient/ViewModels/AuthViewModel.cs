@@ -12,9 +12,6 @@ namespace RussianNationalMessengerClient.ViewModels;
 
 public class AuthViewModel : ViewModelBase
 {
-    // закрытие приложения
-    public ICommand CloseCommand => new RelayCommand(_ => App.Current.Shutdown());
-
     public ICommand LoginCommand => new RelayCommand(async _ =>
     {
         Progress<int> progress = new(value => Value = value);
@@ -22,8 +19,10 @@ public class AuthViewModel : ViewModelBase
         {
             await _service.AuthorizationAsync(Login.UserName, Login.Password, progress);
 
+            await _service.Connection.InvokeAsync("GetChats");
+
             if (_service.Connection.State == HubConnectionState.Connected)
-                _navigation.NavigateTo<ChatsViewModel>();
+                _navigation.NavigateTo<MessengerState>();
         }
         catch (HttpRequestException ex)
         {

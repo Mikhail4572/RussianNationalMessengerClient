@@ -4,10 +4,35 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Pages"
-      mc:Ignorable="d" 
+      mc:Ignorable="d" Background="White"
       d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid>
-        
+    <Grid ColumnDefinitions="1*,4*">        
+        <Border BorderBrush="gray" BorderThickness="0 0 0.5 0">
+            <Grid RowDefinitions="auto, *">
+                <Grid ColumnDefinitions="*, *, *" Margin="5">
+                    <Button HorizontalAlignment="Left">Меню</Button>
+                    <TextBox Grid.Column="1" Grid.ColumnSpan="2"/>
+                </Grid>
+
+                <ListView Grid.Row="1" ItemsSource="{Binding Chats}" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedChat}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid RowDefinitions="*,*">
+                                <Label Content="{Binding DisplayName}"/>
+                                <Grid Grid.Row="1" ColumnDefinitions="auto, *">
+                                    <Label Content="{Binding LastMessageAuthor}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding LastMessageContent}" 
+                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Border>
+
+        <ContentControl Grid.Column="1"
+            Content="{Binding SelectedChat}"/>
     </Grid>
 </UserControl>

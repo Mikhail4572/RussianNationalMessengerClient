@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Windows"
         xmlns:viewModels="clr-namespace:RussianNationalMessengerClient.ViewModels"
         xmlns:views="clr-namespace:RussianNationalMessengerClient.Views.Pages"
-        mc:Ignorable="d"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
 
@@ -17,9 +17,15 @@
         </DataTemplate>
         
         <DataTemplate
-            DataType="{x:Type viewModels:ChatsViewModel}">
+            DataType="{x:Type viewModels:MessengerState}">
 
             <views:ChatsPage/>
+        </DataTemplate>
+
+        <DataTemplate
+            DataType="{x:Type viewModels:ChatViewModel}">
+
+            <views:DialogPage/>
         </DataTemplate>
 
     </Window.Resources>
@@ -28,27 +34,4 @@
         <ContentControl
             Content="{Binding CurrentViewModel}"/>
     </Grid>
-    <!--<Border BorderBrush="gray" BorderThickness="0 0 2 0">
-            <Grid RowDefinitions="auto, *">
-                <Grid ColumnDefinitions="*, *, *" Margin="5">
-                    <Button HorizontalAlignment="Left">Меню</Button>
-                    <TextBox Grid.Column="1" Grid.ColumnSpan="2"/>
-                </Grid>
-                <ListView Grid.Row="1" ItemsSource="{Binding Chats}"
-                          HorizontalContentAlignment="Stretch">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Button Background="Transparent" BorderThickness="0" Command="{Binding ShowDialogCommand}">
-                                <Button.Content>
-                                    <Label Content="{Binding .}"/>
-                                </Button.Content>
-                            </Button>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Grid>
-        </Border>
-
-    -->
-        
 </Window>

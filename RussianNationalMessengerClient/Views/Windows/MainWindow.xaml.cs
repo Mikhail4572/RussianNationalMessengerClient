@@ -1,4 +1,5 @@
-﻿using RussianNationalMessengerClient.ViewModels;
+﻿using RussianNationalMessengerClient.Services;
+using RussianNationalMessengerClient.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,7 @@ namespace RussianNationalMessengerClient.Views.Windows;
 
 public partial class MainWindow : Window
 {
-    public MainWindow(MainViewModel vm)
+    public MainWindow(NavigationService vm)
     {
         InitializeComponent();
         DataContext = vm;

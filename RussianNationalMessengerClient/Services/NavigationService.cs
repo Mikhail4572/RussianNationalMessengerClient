@@ -23,9 +23,6 @@ public class NavigationService : ViewModelBase
     public NavigationService(IServiceProvider provider) =>    
         _provider = provider;    
 
-    public void NavigateTo<T>() where T : ViewModelBase
-    {
-        CurrentViewModel =
-            _provider.GetRequiredService<T>();
-    }
+    public void NavigateTo<T>() where T : ViewModelBase =>
+        CurrentViewModel = _provider.GetRequiredService<T>();
 }

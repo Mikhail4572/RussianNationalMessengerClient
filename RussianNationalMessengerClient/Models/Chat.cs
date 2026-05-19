@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace RussianNationalMessengerClient.Models;
 
@@ -11,7 +10,7 @@ public class Chat
     [JsonPropertyName("name")]
     public string? Name 
     {
-        get => string.IsNullOrEmpty(field) ? Members[0] : Name;
+        get => string.IsNullOrEmpty(field) ? Members[1] : field;
         set;
     }
     
@@ -25,6 +24,9 @@ public class Chat
     [JsonPropertyName("members")]
     public List<string> Members { get; set; }
 
-    [JsonIgnore]
-    public ObservableCollection<Message> Messages { get; set; }
+    [JsonPropertyName("lastMessage")]
+    public LastMessage? LastMessage { get; set; }
+
+    public override string ToString() => LastMessage?.Content ?? "";
+
 }
