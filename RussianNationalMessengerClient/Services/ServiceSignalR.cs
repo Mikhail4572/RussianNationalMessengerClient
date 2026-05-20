@@ -34,6 +34,7 @@ public class ServiceSignalR
         progress?.Report(100);
 
         return loginResponse;
+
     }
 
     private async Task<HubConnection> ConnectToHub(string token)
