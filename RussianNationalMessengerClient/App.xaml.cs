@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RussianNationalMessengerClient.Classes;
 using RussianNationalMessengerClient.Services;
 using RussianNationalMessengerClient.ViewModels;
 using RussianNationalMessengerClient.Views.Windows;
@@ -46,6 +47,13 @@ public partial class App : Application
         services.AddSingleton<MessengerState>();
 
         services.AddSingleton<MainWindow>();
+
+        services.AddSingleton<AuthState>();
+
+        services.AddTransient<ChatsViewModel>();
+
+        // factory
+        services.AddSingleton<ChatViewModelFactory>();
 
         // views
 

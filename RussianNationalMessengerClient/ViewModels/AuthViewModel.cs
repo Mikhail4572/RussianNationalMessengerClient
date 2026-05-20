@@ -17,12 +17,16 @@ public class AuthViewModel : ViewModelBase
         Progress<int> progress = new(value => Value = value);
         try
         {
-            await _service.AuthorizationAsync(Login.UserName, Login.Password, progress);
+            var response = await _service.AuthorizationAsync(Login.UserName, Login.Password, progress);
+
+            _authState.Token = response.Token;
+
+            _authState.CurrentUser = response.User;
 
             await _service.Connection.InvokeAsync("GetChats");
 
             if (_service.Connection.State == HubConnectionState.Connected)
-                _navigation.NavigateTo<MessengerState>();
+                _navigation.NavigateTo<ChatsViewModel>();
         }
         catch (HttpRequestException ex)
         {
@@ -59,13 +63,15 @@ public class AuthViewModel : ViewModelBase
         }
     } = new();
 
+    private readonly AuthState _authState;
     private readonly ServiceSignalR _service;
     private readonly NavigationService _navigation;
 
-    public AuthViewModel(ServiceSignalR service, NavigationService navigation)
+    public AuthViewModel(ServiceSignalR service, NavigationService navigation, AuthState authState)
     {
         _service = service;
         _navigation = navigation;
+        _authState = authState;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

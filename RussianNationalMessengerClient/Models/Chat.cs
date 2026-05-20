@@ -8,11 +8,7 @@ public class Chat
     public string Id { get; set; } = Guid.NewGuid().ToString();
 
     [JsonPropertyName("name")]
-    public string? Name 
-    {
-        get => string.IsNullOrEmpty(field) ? Members[1] : field;
-        set;
-    }
+    public string? Name { get; set; }
     
     [JsonPropertyName("isGroup")]
     public bool IsGroup { get; set; }

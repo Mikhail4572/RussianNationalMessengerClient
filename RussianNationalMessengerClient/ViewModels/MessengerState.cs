@@ -15,7 +15,7 @@ public class MessengerState : ViewModelBase
 
     public ObservableCollection<ChatViewModel> Chats { get; } = [];
 
-    public ChatViewModel SelectedChat
+    public ChatViewModel? SelectedChat
     {
         get => field;
         set
@@ -25,18 +25,14 @@ public class MessengerState : ViewModelBase
         }
     }
 
-    private readonly ServiceSignalR _service;
-    private readonly NavigationService _navigation;
+    private readonly AuthState _authState;
+    private readonly ChatViewModelFactory _factory;
 
-    public MessengerState(NavigationService navigation)
+    public MessengerState(AuthState authState, ChatViewModelFactory factory)
     {
-        _navigation = navigation;
+        _authState = authState;
+        _factory = factory;
     }
-
-    public ICommand ToChatPageCommand => new RelayCommand(_ => 
-    {
-        // переход к диалогу
-    });
 
     public ChatViewModel? GetChat(string chatId)
     {
@@ -47,18 +43,19 @@ public class MessengerState : ViewModelBase
 
     public void LoadChats(List<Chat> chats)
     {
-        Chats.Clear();
-
-        _chatCache.Clear();
-
         foreach (Chat chat in chats)
         {
-            ChatViewModel vm =
-                new(chat);
+            if (_chatCache.TryGetValue(chat.Id, out var existingChat))
+            {
+                existingChat.Update(chat);
+                continue;
+            }
 
-            Chats.Add(vm);
+            ChatViewModel vm = _factory.Create(chat);
 
             _chatCache.Add(chat.Id, vm);
+
+            Chats.Add(vm);
         }
     }
 }

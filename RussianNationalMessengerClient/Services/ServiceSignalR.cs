@@ -10,64 +10,33 @@ using System.Windows;
 
 namespace RussianNationalMessengerClient.Services;
 
-public class ServiceSignalR 
+public class ServiceSignalR
 {
     public HubConnection Connection { get; private set; }
 
     private readonly MessengerState _messengerState;
 
-    private readonly HttpClient _httpClient;
-
-    //на получение списка сообщений
-    public event Action<List<Message>>? OnMessages;
-
     //на получение сообщения
     public event Action<Message>? OnMessage;
 
-    public ServiceSignalR(MessengerState messengerState)
-    {
-        _httpClient = new()
-        {
-            Timeout = TimeSpan.FromSeconds(30)
-        };
-
+    public ServiceSignalR(MessengerState messengerState) =>
         _messengerState = messengerState;
-    }
 
-    private async Task<string> Login(string username, string password)
-    {
-        LoginDto login = new()
-        {
-            UserName = username,
-            Password = password
-        };
-
-        var response = await _httpClient.PostAsJsonAsync("https://localhost:7110/api/Login/login", login);
-
-        if (!response.IsSuccessStatusCode)
-            throw new HttpRequestException(await response.Content.ReadAsStringAsync());
-
-        var json = await response.Content.ReadAsStringAsync();
-
-        var loginResponse = JsonSerializer.Deserialize<LoginResponseDto>(json) ??
-            throw new ArgumentNullException(nameof(json) + " is null");
-
-        return loginResponse.Token;
-    }
-
-    public async Task AuthorizationAsync(string username, string password, IProgress<int>? progress = null)
+    public async Task<LoginResponseDto> AuthorizationAsync(string username, string password, IProgress<int>? progress = null)
     {
         progress?.Report(10);
-        var token = await Login(username, password);
+        var loginResponse = await RequestToApiRNM.Login(username, password);
 
-        if (string.IsNullOrEmpty(token))
-            throw new ArgumentNullException(nameof(token) + " is null or empty");
+        if (string.IsNullOrEmpty(loginResponse.Token))
+            throw new ArgumentNullException(nameof(loginResponse.Token) + " is null or empty");
 
         progress?.Report(40);
 
-        Connection = await ConnectToHub(token);
+        Connection = await ConnectToHub(loginResponse.Token);
 
         progress?.Report(100);
+
+        return loginResponse;
     }
 
     private async Task<HubConnection> ConnectToHub(string token)
@@ -78,12 +47,17 @@ public class ServiceSignalR
             .WithAutomaticReconnect()
             .Build();
 
-        connection.On<List<Message>>("onMessages", messages =>
+        connection.On<string, List<Message>>("onMessages", (chatId, messages) =>
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                OnMessages?.Invoke(messages);
+                ChatViewModel? chat =
+                _messengerState.GetChat(chatId);
 
+                if (chat is null)
+                    return;
+
+                chat.LoadMessages(messages);
             });
         });
 
@@ -112,7 +86,7 @@ public class ServiceSignalR
 
         connection.On<List<Chat>>("onChats", chats =>
         {
-            App.Current.Dispatcher.Invoke(() => 
+            App.Current.Dispatcher.Invoke(() =>
             {
                 _messengerState.LoadChats(chats);
             });
@@ -123,6 +97,9 @@ public class ServiceSignalR
         connection.Closed += Connection_Closed;
         return connection;
     }
+
+    public async Task GetMessagesAsync(string chatId) =>
+        await Connection.SendAsync("GetMessages", chatId);
 
     public async Task GetChatsAsync() =>
         await Connection.SendAsync("GetChats");

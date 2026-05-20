@@ -20,8 +20,11 @@ public class Message
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
     [JsonPropertyName("isEdited")]
-    public bool IsEdited { get; set; }
+    public bool IsEdited { get; set; } = false;
 
     [JsonPropertyName("isDeleted")]
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; set; } = false;
+
+    [JsonIgnore]
+    public string SentAtFormat => $"{SentAt:dd:MM:yyyy HH:mm:ss}";
 }

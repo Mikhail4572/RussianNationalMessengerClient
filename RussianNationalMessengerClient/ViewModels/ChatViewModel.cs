@@ -1,8 +1,5 @@
 ﻿using RussianNationalMessengerClient.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
@@ -12,7 +9,7 @@ public class ChatViewModel : ViewModelBase
 
     public ObservableCollection<Message> Messages { get; set; } = [];
 
-    public string DisplayName => Chat.Name ?? string.Empty;
+    public string DisplayName => Chat.Members.FirstOrDefault(x => x != _authState.CurrentUser.Id) ?? string.Empty;
 
     public string LastMessageContent
     {
@@ -32,10 +29,47 @@ public class ChatViewModel : ViewModelBase
             if (Chat.LastMessage is null)
                 return string.Empty;
 
-            return $"{Chat.LastMessage.Author}:";
+            if (string.IsNullOrEmpty(Chat.Name))
+                return Chat.LastMessage.Author == _authState.CurrentUser.Id ? "Вы:" : Chat.LastMessage.Author;
+
+            return string.Empty;
         }
     }
 
-    public ChatViewModel(Chat chat) => 
+    public void Update(Chat chat)
+    {
+        chat.LastMessage = chat.LastMessage;
+
+        chat.Name = chat.Name;
+
+        OnPropertyChanged(nameof(DisplayName));
+        OnPropertyChanged(nameof(LastMessageContent));
+        OnPropertyChanged(nameof(LastMessageAuthor));
+    }   
+
+    public Message CurrentMessage
+    {
+        get => field;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(CurrentMessage));
+        }
+    } = new();
+
+    private readonly AuthState _authState;
+
+    public void LoadMessages(List<Message> messages)
+    {
+        Messages.Clear();
+
+        foreach (Message message in messages)
+            Messages.Add(message);
+    }
+
+    public ChatViewModel(Chat chat, AuthState authState)
+    {
         Chat = chat;
+        _authState = authState;
+    }
 }
