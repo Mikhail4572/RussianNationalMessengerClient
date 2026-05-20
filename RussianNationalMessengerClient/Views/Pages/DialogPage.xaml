@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       xmlns:vm="clr-namespace:RussianNationalMessengerClient.ViewModels"
+      xmlns:views="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
     
@@ -22,10 +23,12 @@
         <ListView Grid.Row="1" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Messages}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border>
-                        <Grid RowDefinitions="auto, *, auto">
-                            <Label Background="LightGray" Content="{Binding Author}" FontSize="12"/>
-                            <Label Content="{Binding Content}" Grid.Row="1" FontSize="15"/>
+                    <Border HorizontalAlignment="Left" BorderThickness="1" CornerRadius="8">
+                        <Grid RowDefinitions="auto, *, auto" MaxWidth="200">
+                            <Label Foreground="LightGray" Content="{Binding Author}" FontSize="12"/>
+                            <TextBlock TextWrapping="Wrap" 
+                                       Text="{Binding Content}"
+                                       Grid.Row="1" FontSize="15"/>
                             <Label Grid.Row="2" Content="{Binding SentAtFormat}"/>
                         </Grid>
                     </Border>            
@@ -34,8 +37,13 @@
         </ListView>
         
         <Grid Grid.Row="2" ColumnDefinitions="6*, 1*" Margin="5">
-            <TextBox Text="{Binding CurrentMessage.Content}" FontSize="15" Padding="2" Margin="0 0 15 0"/>
-            <Button Content="Отправить" Grid.Column="1" Padding="5"/>
+            <TextBox Text="{Binding DataContext.Content, 
+                RelativeSource={RelativeSource AncestorType=views:ChatsPage}}" 
+                     FontSize="15" Padding="2" Margin="0 0 15 0"/>
+            
+            <Button Content="Отправить" Command="{Binding DataContext.SendMessageCommand,
+                RelativeSource={RelativeSource AncestorType=views:ChatsPage}}" 
+                    Grid.Column="1" Padding="5"/>
         </Grid>
     </Grid>
 </UserControl>

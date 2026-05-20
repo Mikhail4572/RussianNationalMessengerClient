@@ -16,9 +16,6 @@ public class ServiceSignalR
 
     private readonly MessengerState _messengerState;
 
-    //на получение сообщения
-    public event Action<Message>? OnMessage;
-
     public ServiceSignalR(MessengerState messengerState) =>
         _messengerState = messengerState;
 
@@ -51,8 +48,7 @@ public class ServiceSignalR
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                ChatViewModel? chat =
-                _messengerState.GetChat(chatId);
+                ChatViewModel? chat = _messengerState.GetChat(chatId);
 
                 if (chat is null)
                     return;
@@ -66,7 +62,6 @@ public class ServiceSignalR
             // добавить изменение LastMessage в Chat
             App.Current.Dispatcher.Invoke(() =>
             {
-                //OnMessage?.Invoke(msg)
                 ChatViewModel? chat = _messengerState.GetChat(msg.ChatId);
 
                 if (chat is null)
@@ -79,6 +74,8 @@ public class ServiceSignalR
                     MessageId = msg.Id,
                     SentAt = msg.SentAt
                 };
+
+                chat.Update(chat.Chat);
 
                 chat.Messages.Add(msg);
             });
@@ -105,11 +102,14 @@ public class ServiceSignalR
         await Connection.SendAsync("GetChats");
 
     private async Task Connection_Closed(Exception? e) =>
-        MessageBox.Show($"соединение разорванно\n{e?.Message}\nState is {Connection?.State.ToString()}");
+        MessageBox.Show($"соединение разорванно\n{e?.Message}\nState is {Connection.State}");
 
-    public async Task SendMessage(string chatId, string message)
+    public async Task SendMessage(Message message)
     {
-        if (Connection is not null)
-            await Connection.InvokeAsync("SendMessage", chatId, message);
+        try
+        {
+            await Connection.InvokeAsync("SendMessage", message);
+        }
+        catch { }
     }
 }

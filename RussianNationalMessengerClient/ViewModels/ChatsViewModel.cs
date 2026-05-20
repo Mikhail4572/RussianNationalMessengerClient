@@ -1,9 +1,11 @@
-﻿using RussianNationalMessengerClient.Models;
+﻿using RussianNationalMessengerClient.Classes;
+using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows.Input;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
@@ -31,12 +33,44 @@ public class ChatsViewModel : ViewModelBase
             }
         }
     }
+    public string Content
+    {
+        get => field;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(Content));
+        }
+    }
 
     public ChatsViewModel(MessengerState messengerState, ServiceSignalR signalR)
     {
         _messengerState = messengerState;
         _signalR = signalR;
     }
+
+    public ICommand SendMessageCommand => new RelayCommand(async _ =>
+    {
+        if (SelectedChat is null)
+            return;
+
+        if (string.IsNullOrWhiteSpace(Content))
+            return;
+
+        Message message = new()
+        {
+            Id = Guid.NewGuid().ToString(),
+            ChatId = SelectedChat.Chat.Id,
+            Content = Content.Trim(),
+            IsDeleted = false,
+            IsEdited = false,
+            SentAt = DateTime.UtcNow
+        };
+
+        await _signalR.SendMessage(message);
+
+        Content = null;
+    });
 
     private async Task LoadMessagesAsync(ChatViewModel chat) =>
         await _signalR.GetMessagesAsync(chat.Chat.Id);

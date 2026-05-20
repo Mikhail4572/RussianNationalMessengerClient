@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using RussianNationalMessengerClient.ViewModels;
+using System.Text.Json.Serialization;
 
 namespace RussianNationalMessengerClient.Models;
 
-public class Chat
+public class Chat : ViewModelBase
 {
     [JsonPropertyName("id")]
     public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -21,7 +22,15 @@ public class Chat
     public List<string> Members { get; set; }
 
     [JsonPropertyName("lastMessage")]
-    public LastMessage? LastMessage { get; set; }
+    public LastMessage? LastMessage
+    {
+        get => field;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(LastMessage));
+        }
+    }
 
     public override string ToString() => LastMessage?.Content ?? "";
 

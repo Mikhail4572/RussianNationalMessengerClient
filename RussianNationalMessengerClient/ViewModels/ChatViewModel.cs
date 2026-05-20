@@ -1,10 +1,15 @@
-﻿using RussianNationalMessengerClient.Models;
+﻿using RussianNationalMessengerClient.Classes;
+using RussianNationalMessengerClient.Models;
+using RussianNationalMessengerClient.Services;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
 public class ChatViewModel : ViewModelBase
 {
+    private readonly ServiceSignalR _signalR;
+
     public Chat Chat { get; }
 
     public ObservableCollection<Message> Messages { get; set; } = [];
@@ -45,17 +50,7 @@ public class ChatViewModel : ViewModelBase
         OnPropertyChanged(nameof(DisplayName));
         OnPropertyChanged(nameof(LastMessageContent));
         OnPropertyChanged(nameof(LastMessageAuthor));
-    }   
-
-    public Message CurrentMessage
-    {
-        get => field;
-        set
-        {
-            field = value;
-            OnPropertyChanged(nameof(CurrentMessage));
-        }
-    } = new();
+    }
 
     private readonly AuthState _authState;
 
