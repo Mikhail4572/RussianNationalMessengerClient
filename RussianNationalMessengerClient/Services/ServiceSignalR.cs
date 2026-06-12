@@ -45,6 +45,38 @@ public class ServiceSignalR
             .WithAutomaticReconnect()
             .Build();
 
+
+        connection.On<string, string>("onRemoveMessage", (chatId, messageId) =>
+        {
+            ChatViewModel? chat = _messengerState.GetChat(chatId);
+
+            if (chat is null)
+                return;
+
+            var remove_message = chat.Messages.FirstOrDefault(m => m.Id == messageId);
+
+            if (remove_message is null)
+                return;
+
+            App.Current.Dispatcher.Invoke(() =>
+                chat.Messages.Remove(remove_message));
+
+            if(chat.Chat.LastMessage is not null && remove_message.Id == chat.Chat.LastMessage.MessageId)
+            {
+                var last = chat.Messages.LastOrDefault();
+
+                chat.Chat.LastMessage = last is null ? null : new()
+                {
+                    MessageId = last.Id,
+                    Author = last.Author,
+                    Content = last.Content,
+                    SentAt = last.SentAt,
+                };
+            }
+
+            chat.Update(chat.Chat);
+        });
+
         connection.On<string, List<Message>>("onMessages", (chatId, messages) =>
         {
             App.Current.Dispatcher.Invoke(() =>
@@ -99,6 +131,9 @@ public class ServiceSignalR
     public async Task GetMessagesAsync(string chatId) =>
         await Connection.SendAsync("GetMessages", chatId);
 
+    public async Task DeleteMessageAsync(string messageId, string chatId) =>
+        await Connection.SendAsync("RemoveMessage", messageId, chatId);
+
     public async Task GetChatsAsync() =>
         await Connection.SendAsync("GetChats");
 
@@ -107,10 +142,6 @@ public class ServiceSignalR
 
     public async Task SendMessage(Message message)
     {
-        try
-        {
-            await Connection.InvokeAsync("SendMessage", message);
-        }
-        catch { }
+        await Connection.InvokeAsync("SendMessage", message);
     }
 }

@@ -2,13 +2,15 @@
 using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.Services;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
 public class ChatViewModel : ViewModelBase
 {
-    private readonly ServiceSignalR _signalR;
+
+    private readonly AuthState _authState;
 
     public Chat Chat { get; }
 
@@ -52,8 +54,6 @@ public class ChatViewModel : ViewModelBase
         OnPropertyChanged(nameof(LastMessageAuthor));
     }
 
-    private readonly AuthState _authState;
-
     public void LoadMessages(List<Message> messages)
     {
         Messages.Clear();
@@ -67,4 +67,5 @@ public class ChatViewModel : ViewModelBase
         Chat = chat;
         _authState = authState;
     }
+
 }

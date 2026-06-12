@@ -38,6 +38,8 @@ public static class RequestToApiRNM
         var loginResponse = JsonSerializer.Deserialize<LoginResponseDto>(json) ??
             throw new ArgumentNullException(nameof(json) + " is null");
 
+        _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", loginResponse.Token);
+
         return loginResponse;
     }
 }

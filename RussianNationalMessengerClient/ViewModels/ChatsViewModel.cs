@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
 
 namespace RussianNationalMessengerClient.ViewModels;
@@ -33,6 +34,7 @@ public class ChatsViewModel : ViewModelBase
             }
         }
     }
+
     public string Content
     {
         get => field;
@@ -70,6 +72,14 @@ public class ChatsViewModel : ViewModelBase
         await _signalR.SendMessage(message);
 
         Content = null;
+    });
+
+    public ICommand RemoveMessageCommand => new RelayCommand(async p =>
+    {
+        if (p is not Message message)
+            return;
+
+        await _signalR.DeleteMessageAsync(message.Id, message.ChatId);
     });
 
     private async Task LoadMessagesAsync(ChatViewModel chat) =>

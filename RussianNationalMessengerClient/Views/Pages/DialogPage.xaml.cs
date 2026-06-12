@@ -1,15 +1,12 @@
-﻿using System;
+﻿using RussianNationalMessengerClient.Models;
+using RussianNationalMessengerClient.Services;
+using RussianNationalMessengerClient.ViewModels;
+using RussianNationalMessengerClient.Views.Windows;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RussianNationalMessengerClient.Views.Pages;
 
@@ -18,5 +15,31 @@ public partial class DialogPage : UserControl
     public DialogPage()
     {
         InitializeComponent();
+        this.Loaded += (s, e) =>
+        {
+            if (DataContext is ChatViewModel vm)
+            {
+                vm.Messages.CollectionChanged += (s, e) =>
+                {
+                    if (LvMessages.Items.Count > 0)
+                        LvMessages.ScrollIntoView(LvMessages.Items[^1]);
+                };
+            }
+        };
+    }
+
+    private void MenuItemRemoveMessage_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem menuItem)
+            return;
+
+        if (menuItem.DataContext is not Message message)
+            return;
+
+        if (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext is not NavigationService dataContext)
+            return;
+
+        ((ChatsViewModel)dataContext.CurrentViewModel).RemoveMessageCommand.Execute(message);
+
     }
 }

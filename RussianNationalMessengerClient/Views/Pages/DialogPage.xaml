@@ -6,9 +6,9 @@
       xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       xmlns:vm="clr-namespace:RussianNationalMessengerClient.ViewModels"
       xmlns:views="clr-namespace:RussianNationalMessengerClient.Views.Pages"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <Grid Background="#f1f1f1" RowDefinitions="auto, *, auto">
         <Grid ColumnDefinitions="auto, *">
             <Grid RowDefinitions="*, auto">
@@ -20,10 +20,18 @@
         </Grid>
         
         <!--Чат-->
-        <ListView Grid.Row="1" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Messages}">
+        <ListView Grid.Row="1" HorizontalContentAlignment="Stretch" x:Name="LvMessages" 
+                  ItemsSource="{Binding Messages}" SelectedItem="{Binding DataContext.SelectedMessage, RelativeSource={RelativeSource AncestorType=views:ChatsPage}}">
+            
+
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border HorizontalAlignment="Left" BorderThickness="1" CornerRadius="8">
+                        <Border.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Удалить" Click="MenuItemRemoveMessage_Click"/>
+                            </ContextMenu>
+                        </Border.ContextMenu>
                         <Grid RowDefinitions="auto, *, auto" MaxWidth="200">
                             <Label Foreground="LightGray" Content="{Binding Author}" FontSize="12"/>
                             <TextBlock TextWrapping="Wrap" 
@@ -38,8 +46,14 @@
         
         <Grid Grid.Row="2" ColumnDefinitions="6*, 1*" Margin="5">
             <TextBox Text="{Binding DataContext.Content, 
-                RelativeSource={RelativeSource AncestorType=views:ChatsPage}}" 
-                     FontSize="15" Padding="2" Margin="0 0 15 0"/>
+                RelativeSource={RelativeSource AncestorType=views:ChatsPage}, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="15" Padding="2" Margin="0 0 15 0" >
+
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding DataContext.SendMessageCommand, RelativeSource={RelativeSource AncestorType=views:ChatsPage}}" />
+                </TextBox.InputBindings>
+                
+            </TextBox>
             
             <Button Content="Отправить" Command="{Binding DataContext.SendMessageCommand,
                 RelativeSource={RelativeSource AncestorType=views:ChatsPage}}" 

@@ -53,7 +53,9 @@ public class MessengerState : ViewModelBase
 
             ChatViewModel vm = _factory.Create(chat);
 
-            _chatCache.Add(chat.Id, vm);
+            //_chatCache.Add(chat.Id, vm);
+
+            _chatCache[chat.Id] = vm;
 
             Chats.Add(vm);
         }
