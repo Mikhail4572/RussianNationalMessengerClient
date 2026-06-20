@@ -34,13 +34,13 @@ public class ChatsViewModel : ViewModelBase
 
     public Account? SelectedAccount
     {
-        get => field;
+        get => _messengerState.SelectedAccount;
         set
         {
-            field = value;
+            _messengerState.SelectedAccount = value;
             OnPropertyChanged(nameof(SelectedAccount));
 
-            if (field is null)
+            if (_messengerState.SelectedAccount is null)
                 return;
 
             SearchUserContent = null;
@@ -57,7 +57,7 @@ public class ChatsViewModel : ViewModelBase
                 Members =
                 [
                     _authState.CurrentUser.Id,
-                    field.Id
+                    _messengerState.SelectedAccount.Id
                 ]
             });
         }
@@ -183,12 +183,19 @@ public class ChatsViewModel : ViewModelBase
         {
             // создаём чат
             await _signalR.CreateChatAsync(message, null, [.. SelectedChat.Chat.Members]);
+            return;
         }
 
 
         await _signalR.SendMessage(message);
 
         Content = null;
+    });
+
+    public ICommand DeleteChatCommand => new RelayCommand(async _ =>
+    {
+        if (SelectedChat is not null)
+            await _signalR.DeleteChatAsync(SelectedChat.Chat.Id);
     });
 
     public ICommand RemoveMessageCommand => new RelayCommand(async p =>

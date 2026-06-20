@@ -35,7 +35,7 @@
 
                     <ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Удалить чат" Command="{Binding }"/>
+                            <MenuItem Header="Удалить чат" Command="{Binding DeleteChatCommand}"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
                     <ListView.ItemTemplate>

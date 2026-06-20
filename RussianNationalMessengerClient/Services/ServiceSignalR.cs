@@ -2,6 +2,7 @@
 using RussianNationalMessengerClient.Dtos;
 using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.ViewModels;
+using RussianNationalMessengerClient.Views.Windows;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -47,15 +48,41 @@ public class ServiceSignalR
             .WithAutomaticReconnect()
             .Build();
 
+        connection.On<string>("onDeleteChat", chatId =>
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                var remove_chat = _messengerState.Chats.FirstOrDefault(x => x.Chat.Id == chatId);
+
+                if (remove_chat is not null)
+                    _messengerState.Chats.Remove(remove_chat);
+
+                _messengerState.RemoveChat(chatId);
+            });
+        });
+
+
         connection.On<string, Chat, Message>("onCreateChat", (oldChatId, chat, firstMessage) =>
         {
-            _messengerState.LoadChats([chat]);
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                _messengerState.LoadChats([chat]);
 
-            var chatVM = _messengerState.GetChat(chat.Id);
+                var chatVM = _messengerState.GetChat(chat.Id);
 
-            chatVM?.Messages.Add(firstMessage);
+                chatVM?.Messages.Add(firstMessage);
 
-            _messengerState.SelectedChat = chatVM;
+                var dc = (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext as 
+                    NavigationService)?.CurrentViewModel as ChatsViewModel;
+
+                dc?.SelectedChat = chatVM;
+
+                //_messengerState.SelectedChat = null;
+                //_messengerState.SelectedAccount = null;
+                //_messengerState.SelectedChat = chatVM;
+
+                MessageBox.Show("");
+            });
         });
 
         connection.On<List<Account>>("onSearchUsers", searchUsers =>
@@ -142,6 +169,9 @@ public class ServiceSignalR
         connection.Closed += Connection_Closed;
         return connection;
     }
+
+    public async Task DeleteChatAsync(string chatId) =>
+        await Connection.SendAsync("DeleteChat", chatId);
 
     public async Task CreateChatAsync(Message firstMessage, string groupName, string[] members) =>
         await Connection.SendAsync("CreateChat", firstMessage, groupName, members);

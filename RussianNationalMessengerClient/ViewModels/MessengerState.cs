@@ -16,6 +16,16 @@ public class MessengerState : ViewModelBase
 
     public ObservableCollection<ChatViewModel> Chats { get; } = [];
 
+    public Account? SelectedAccount
+    {
+        get => field;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(SelectedAccount));
+        }
+    }
+
     public ChatViewModel? SelectedChat
     {
         get => field;
@@ -34,6 +44,9 @@ public class MessengerState : ViewModelBase
         _authState = authState;
         _factory = factory;
     }
+
+    public bool RemoveChat(string chatId) =>
+        _chatCache.TryRemove(chatId, out _);    
 
     public ChatViewModel? GetChat(string chatId)
     {
