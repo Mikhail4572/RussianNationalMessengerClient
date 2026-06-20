@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows;
 
-namespace RussianNationalMessengerClient.Classes;
+namespace RussianNationalMessengerClient.Helpers;
 
 public static class PasswordBoxHelper
 {

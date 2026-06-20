@@ -2,9 +2,6 @@
 using RussianNationalMessengerClient.Services;
 using RussianNationalMessengerClient.ViewModels;
 using RussianNationalMessengerClient.Views.Windows;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -39,7 +36,6 @@ public partial class DialogPage : UserControl
         if (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext is not NavigationService dataContext)
             return;
 
-        ((ChatsViewModel)dataContext.CurrentViewModel).RemoveMessageCommand.Execute(message);
-
+        (dataContext.CurrentViewModel as ChatsViewModel)?.RemoveMessageCommand.Execute(message);
     }
 }

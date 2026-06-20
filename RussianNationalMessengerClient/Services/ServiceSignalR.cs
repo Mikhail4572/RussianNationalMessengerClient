@@ -16,6 +16,8 @@ public class ServiceSignalR
 
     private readonly MessengerState _messengerState;
 
+    public event Action<List<Account>>? OnUsersFound;
+
     public ServiceSignalR(MessengerState messengerState) =>
         _messengerState = messengerState;
 
@@ -45,6 +47,19 @@ public class ServiceSignalR
             .WithAutomaticReconnect()
             .Build();
 
+        connection.On<string, Chat, Message>("onCreateChat", (oldChatId, chat, firstMessage) =>
+        {
+            _messengerState.LoadChats([chat]);
+
+            var chatVM = _messengerState.GetChat(chat.Id);
+
+            chatVM?.Messages.Add(firstMessage);
+
+            _messengerState.SelectedChat = chatVM;
+        });
+
+        connection.On<List<Account>>("onSearchUsers", searchUsers =>
+            OnUsersFound?.Invoke(searchUsers));
 
         connection.On<string, string>("onRemoveMessage", (chatId, messageId) =>
         {
@@ -127,6 +142,12 @@ public class ServiceSignalR
         connection.Closed += Connection_Closed;
         return connection;
     }
+
+    public async Task CreateChatAsync(Message firstMessage, string groupName, string[] members) =>
+        await Connection.SendAsync("CreateChat", firstMessage, groupName, members);
+
+    public async Task GetUsersByNameAsync(string name) =>
+        await Connection.SendAsync("GetUsersByName", name);
 
     public async Task GetMessagesAsync(string chatId) =>
         await Connection.SendAsync("GetMessages", chatId);

@@ -2,6 +2,7 @@
 using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.Services;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -11,7 +12,7 @@ namespace RussianNationalMessengerClient.ViewModels;
 
 public class MessengerState : ViewModelBase
 {
-    private readonly Dictionary<string, ChatViewModel> _chatCache = new();
+    private readonly ConcurrentDictionary<string, ChatViewModel> _chatCache = new();
 
     public ObservableCollection<ChatViewModel> Chats { get; } = [];
 

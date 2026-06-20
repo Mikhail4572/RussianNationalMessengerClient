@@ -5,17 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RussianNationalMessengerClient.Classes
+namespace RussianNationalMessengerClient.Classes;
+
+public class ChatViewModelFactory
 {
-    public class ChatViewModelFactory
+    private readonly AuthState _authState;
+
+    public ChatViewModelFactory(AuthState authState)
     {
-        private readonly AuthState _authState;
-
-        public ChatViewModelFactory(AuthState authState)
-        {
-            _authState = authState;
-        }
-
-        public ChatViewModel Create(Chat chat) => new(chat, _authState);
+        _authState = authState;
     }
+
+    public ChatViewModel Create(Chat chat) => new(chat, _authState);
 }
