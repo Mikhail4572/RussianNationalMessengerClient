@@ -179,15 +179,9 @@ public class ChatsViewModel : ViewModelBase
             SentAt = DateTime.UtcNow
         };
 
-        if (!SelectedChat.Chat.IsCreated)
-        {
-            // создаём чат
-            await _signalR.CreateChatAsync(message, null, [.. SelectedChat.Chat.Members]);
-            return;
-        }
+        var task = SelectedChat.Chat.IsCreated ? _signalR.SendMessage(message) : _signalR.CreateChatAsync(message, null, [.. SelectedChat.Chat.Members]);
 
-
-        await _signalR.SendMessage(message);
+        await task;
 
         Content = null;
     });

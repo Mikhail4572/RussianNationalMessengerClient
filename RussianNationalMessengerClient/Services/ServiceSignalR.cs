@@ -72,16 +72,11 @@ public class ServiceSignalR
 
                 chatVM?.Messages.Add(firstMessage);
 
-                var dc = (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext as 
+                var vm = (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext as 
                     NavigationService)?.CurrentViewModel as ChatsViewModel;
 
-                dc?.SelectedChat = chatVM;
-
-                //_messengerState.SelectedChat = null;
-                //_messengerState.SelectedAccount = null;
-                //_messengerState.SelectedChat = chatVM;
-
-                MessageBox.Show("");
+                vm?.SelectedAccount = null;
+                vm?.SelectedChat = chatVM;
             });
         });
 
