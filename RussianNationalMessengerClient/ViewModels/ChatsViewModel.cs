@@ -37,6 +37,16 @@ public class ChatsViewModel : ViewModelBase
         get => _messengerState.SelectedAccount;
         set
         {
+
+            if (value is not null &&
+                _messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Contains(value.Username))
+                    is ChatViewModel chatVM) 
+            {
+                SearchUserContent = null;
+                SelectedChat = chatVM;
+                return;
+            }
+
             _messengerState.SelectedAccount = value;
             OnPropertyChanged(nameof(SelectedAccount));
 
@@ -56,8 +66,8 @@ public class ChatsViewModel : ViewModelBase
                 IsCreated = false,
                 Members =
                 [
-                    _authState.CurrentUser.Id,
-                    _messengerState.SelectedAccount.Id
+                    _authState.CurrentUser.Username,
+                    _messengerState.SelectedAccount.Username
                 ]
             });
         }
@@ -135,7 +145,8 @@ public class ChatsViewModel : ViewModelBase
                 SearchUsers.Clear();
 
                 // формируем список из тех контактов, чаты с которыми уже существуют
-                List<Account> generalChatInSearch = [.. searchUsers.Where(x => Chats.Select(x => x.Chat).SelectMany(x => x.Members).Contains(x.Id) && x.Id != _authState.CurrentUser.Id)];
+                List<Account> generalChatInSearch = [.. searchUsers.Where(x => Chats.Select(x => x.Chat).SelectMany(x => x.Members)
+                    .Contains(x.Username) && x.Username != _authState.CurrentUser.Username)];
 
                 // удаляем аккаунты из списка тех с кем чат уже есть
                 foreach (var item in generalChatInSearch)
@@ -189,7 +200,13 @@ public class ChatsViewModel : ViewModelBase
     public ICommand DeleteChatCommand => new RelayCommand(async _ =>
     {
         if (SelectedChat is not null)
-            await _signalR.DeleteChatAsync(SelectedChat.Chat.Id);
+        {
+            var mbres = MessageBox.Show("Вы точно хотите удалить чат со всей историей сообщений?\nЭто действие нельзя будет отменить.",
+                    "Предупреждение.", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (mbres == MessageBoxResult.Yes)
+                await _signalR.DeleteChatAsync(SelectedChat.Chat.Id);
+        }
     });
 
     public ICommand RemoveMessageCommand => new RelayCommand(async p =>

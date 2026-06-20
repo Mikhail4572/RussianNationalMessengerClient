@@ -43,7 +43,7 @@
                             <Grid RowDefinitions="* *">
                                 <Label Content="{Binding DisplayName}"/>
                                 <Grid Grid.Row="1" ColumnDefinitions="auto, *">
-                                    <Label Content="{Binding LastMessageAuthor}"/>
+                                    <TextBlock Text="{Binding LastMessageAuthor}" Margin="0 0 5 0"/>
                                     <TextBlock Grid.Column="1" Text="{Binding LastMessageContent}" 
                                                TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                 </Grid>

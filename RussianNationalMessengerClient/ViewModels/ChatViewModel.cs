@@ -12,7 +12,7 @@ public class ChatViewModel : ViewModelBase
 
     public ObservableCollection<Message> Messages { get; set; } = [];
 
-    public string DisplayName => Chat.Members.FirstOrDefault(x => x != _authState.CurrentUser.Id) ?? string.Empty;
+    public string DisplayName => Chat.Members.FirstOrDefault(x => x != _authState.CurrentUser.Username) ?? string.Empty;
 
     public string LastMessageContent
     {
@@ -33,7 +33,7 @@ public class ChatViewModel : ViewModelBase
                 return string.Empty;
 
             if (string.IsNullOrEmpty(Chat.Name))
-                return Chat.LastMessage.Author == _authState.CurrentUser.Id ? "Вы:" : Chat.LastMessage.Author;
+                return Chat.LastMessage.Author == _authState.CurrentUser.Username ? "Вы:" : Chat.LastMessage.Author;
 
             return string.Empty;
         }

@@ -31,7 +31,7 @@
                                 <MenuItem Header="Удалить" Click="MenuItemRemoveMessage_Click"/>
                             </ContextMenu>
                         </Border.ContextMenu>
-                        <Grid RowDefinitions="auto, *, auto" MaxWidth="200">
+                        <Grid RowDefinitions="auto, *, auto" MaxWidth="400">
                             <Label Foreground="LightGray" Content="{Binding Author}" FontSize="12"/>
                             <TextBlock TextWrapping="Wrap" 
                                        Text="{Binding Content}"
