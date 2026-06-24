@@ -9,8 +9,8 @@
     xmlns:helpers="clr-namespace:RussianNationalMessengerClient.Helpers"
     xmlns:converters="clr-namespace:RussianNationalMessengerClient.Converters"
     mc:Ignorable="d" Background="White"
-    x:Name="ChatsPageRoot"
     d:DesignHeight="450" d:DesignWidth="800">
+    
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisCon"/>
     </UserControl.Resources>
@@ -18,8 +18,8 @@
     <Grid ColumnDefinitions="1* 4*">
         <Border BorderBrush="gray" BorderThickness="0 0 0.5 0">
             <Grid RowDefinitions="auto, *">
-                <Grid ColumnDefinitions="*, *, *" Margin="5">
-                    <Button HorizontalAlignment="Left" Content="Меню" />
+                <Grid ColumnDefinitions="auto, *" Margin="5">
+                    <Button HorizontalAlignment="Left" Margin="0 0 5 0" Content="Меню" />
                     <TextBox Grid.Column="1" Grid.ColumnSpan="2" helpers:FocusHelper.IsFocused="{Binding IsFocusedTbSearch, Mode=TwoWay}"
                              Text="{Binding SearchUserContent, UpdateSourceTrigger=PropertyChanged}">
                         <i:Interaction.Triggers>
@@ -31,7 +31,8 @@
                 </Grid>
                 
                 <ListView Grid.Row="1" ItemsSource="{Binding Chats}" HorizontalContentAlignment="Stretch" 
-                          SelectedItem="{Binding SelectedChat}" Visibility="{Binding VisibilityChatsLV}">
+                          SelectedItem="{Binding SelectedChat}" Visibility="{Binding VisibilityChatsLV}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
                     <ListView.ContextMenu>
                         <ContextMenu>
@@ -40,11 +41,12 @@
                     </ListView.ContextMenu>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid RowDefinitions="* *">
+                            <Grid RowDefinitions="* *" MaxHeight="50" >
                                 <Label Content="{Binding DisplayName}"/>
-                                <Grid Grid.Row="1" ColumnDefinitions="auto, *">
+                                <Grid Grid.Row="1" ColumnDefinitions="auto, *" HorizontalAlignment="Stretch">
                                     <TextBlock Text="{Binding LastMessageAuthor}" Margin="0 0 5 0"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding LastMessageContent}" 
+                                    <TextBlock Grid.Column="1" Text="{Binding LastMessageContent}"
+                                               HorizontalAlignment="Stretch"
                                                TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                 </Grid>
                             </Grid>

@@ -24,7 +24,13 @@ public partial class DialogPage : UserControl
             }
         };
     }
+    private void MenuItemCopyMessage_Click(object sender, RoutedEventArgs e) 
+    {
+        if (sender is not MenuItem menuItem || menuItem.DataContext is not Message message)
+            return;
 
+        Clipboard.SetText(message.Content);
+    }
     private void MenuItemRemoveMessage_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not MenuItem menuItem)

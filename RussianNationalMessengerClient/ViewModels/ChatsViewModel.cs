@@ -161,6 +161,12 @@ public class ChatsViewModel : ViewModelBase
         };
     }
 
+    public ICommand PasteContentCommand => new RelayCommand(_ =>
+    {
+        if (Clipboard.ContainsText())
+            Content += Clipboard.GetText();
+    });
+
     public ICommand SearchUserCommand => new RelayCommand(async _ =>
     {
         if (string.IsNullOrEmpty(SearchUserContent))
