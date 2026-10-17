@@ -5,7 +5,7 @@ namespace RussianNationalMessengerClient.Models;
 public class Message
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Id { get; set; }
 
     [JsonPropertyName("chatId")]
     public string ChatId { get; set; }
@@ -26,5 +26,5 @@ public class Message
     public bool IsDeleted { get; set; } = false;
 
     [JsonIgnore]
-    public string SentAtFormat => $"{SentAt:dd:MM:yyyy HH:mm:ss}";
+    public string SentAtFormat => $"{SentAt.ToLocalTime():dd:MM:yyyy HH:mm:ss}";
 }

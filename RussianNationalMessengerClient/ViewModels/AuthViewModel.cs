@@ -14,10 +14,26 @@ public class AuthViewModel : ViewModelBase
 {
     public ICommand LoginCommand => new RelayCommand(async _ =>
     {
-        Progress<int> progress = new(value => Value = value);
+        IProgress<int> progress = new Progress<int>(value => Value = value);
+
         try
         {
-            var response = await _service.AuthorizationAsync(Login.UserName, Login.Password, progress);
+            ArgumentException.ThrowIfNullOrWhiteSpace(Login.UserName, nameof(Login.UserName));
+            ArgumentException.ThrowIfNullOrWhiteSpace(Login.Password, nameof(Login.Password));
+
+            var loginResult = await RequestToApiRNM.Login(Login.UserName, Login.Password);
+
+            if(loginResult.loginResponseDto is null)
+            {
+                ErrorMessage = loginResult.problem is null ? "Ошибка, попробуйте позже("
+                    : "Title: " + loginResult.problem.Title;
+
+                return;
+            }
+
+            progress.Report(10);
+
+            var response = await _service.AuthorizationAsync(loginResult.loginResponseDto, progress);
 
             _authState.Token = response.Token;
 
@@ -28,13 +44,17 @@ public class AuthViewModel : ViewModelBase
             if (_service.Connection.State == HubConnectionState.Connected)
                 _navigation.NavigateTo<ChatsViewModel>();
         }
+        catch (ArgumentException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
         catch (HttpRequestException ex)
         {
-            MessageBox.Show(ex.Message);
+            ErrorMessage = ex.Message;
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message);
+            ErrorMessage = ex.Message;
         }
         finally
         {
@@ -52,6 +72,16 @@ public class AuthViewModel : ViewModelBase
             OnPropertyChanged(nameof(Value));
         }
     } = 0;
+
+    public string ErrorMessage
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(ErrorMessage));
+        }
+    }
 
     public LoginDto Login
     {

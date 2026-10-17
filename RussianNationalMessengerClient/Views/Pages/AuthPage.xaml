@@ -29,7 +29,7 @@
         </Button>-->
 
         <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
-              RowDefinitions="auto, auto, auto, auto, auto, auto, auto">
+              RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto">
             <Label Content="Вход" FontSize="30" HorizontalContentAlignment="Center"/>
             <Label FontSize="15" Grid.Row="1" Content="Логин"/>
             <TextBox Text="{Binding Login.UserName}" Grid.Row="2"/>
@@ -37,6 +37,8 @@
             <PasswordBox helpers:PasswordBoxHelper.Password="{Binding Login.Password, Mode=TwoWay}" Grid.Row="4"/>
             <Button Command="{Binding LoginCommand}" Content="Войти" Grid.Row="5"/>
             <ProgressBar Value="{Binding Value}" Maximum="100" Minimum="0" Height="10" Grid.Row="6"/>
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="red" Grid.Row="7" />
+            <!--Visibility="{Binding ErrorVisibility}"-->
         </Grid>
 
     </Grid>

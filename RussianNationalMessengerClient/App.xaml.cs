@@ -10,7 +10,6 @@ namespace RussianNationalMessengerClient;
 
 public partial class App : Application
 {
-    //public static ObservableCollection<Chat> Chats { get; set; } = [];
     public static ServiceProvider Services { get; private set; }
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -33,30 +32,24 @@ public partial class App : Application
 
     private void ConfigureServices(IServiceCollection services)
     {
-        // services
+        // Singleton
 
         services.AddSingleton<ServiceSignalR>();
 
         services.AddSingleton<NavigationService>();
 
-
-        // viewmodels
-
-        services.AddTransient<AuthViewModel>();
-
         services.AddSingleton<MessengerState>();
-
-        services.AddSingleton<MainWindow>();
 
         services.AddSingleton<AuthState>();
 
-        services.AddTransient<ChatsViewModel>();
-
-        // factory
         services.AddSingleton<ChatViewModelFactory>();
 
-        // views
-
         services.AddSingleton<MainWindow>();
+
+        // Transient
+
+        services.AddTransient<AuthViewModel>();
+
+        services.AddTransient<ChatsViewModel>();
     }
 }

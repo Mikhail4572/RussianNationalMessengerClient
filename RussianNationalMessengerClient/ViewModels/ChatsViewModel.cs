@@ -61,7 +61,7 @@ public class ChatsViewModel : ViewModelBase
                 Id = Guid.NewGuid().ToString(),
                 Name = null,
                 IsGroup = false,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 LastMessage = null,
                 IsCreated = false,
                 Members =
@@ -83,6 +83,7 @@ public class ChatsViewModel : ViewModelBase
 
             if (value is not null && value.Chat.IsCreated)
             {
+                Content = null;
                 _ = LoadMessagesAsync(value);
             }
         }
@@ -122,12 +123,10 @@ public class ChatsViewModel : ViewModelBase
             {
                 case NotifyCollectionChangedAction.Add:
                     IsFocusedTbSearch = SearchUsers.Count > 0;
-
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
                     IsFocusedTbSearch = SearchUsers.Count > 0;
-
                     break;
 
                 case NotifyCollectionChangedAction.Reset:

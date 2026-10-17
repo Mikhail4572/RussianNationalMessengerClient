@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 
 namespace RussianNationalMessengerClient.Services;
 
@@ -20,7 +21,7 @@ public static class RequestToApiRNM
         };
     }
 
-    public static async Task<LoginResponseDto> Login(string username, string password)
+    public static async Task<(LoginResponseDto? loginResponseDto, ProblemDetails? problem)> Login(string username, string password)
     {
         LoginDto login = new()
         {
@@ -31,15 +32,20 @@ public static class RequestToApiRNM
         var response = await _httpClient.PostAsJsonAsync("https://localhost:7110/api/Login/login", login);
 
         if (!response.IsSuccessStatusCode)
-            throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+            return (null, await response.Content.ReadFromJsonAsync<ProblemDetails>());
 
         var json = await response.Content.ReadAsStringAsync();
 
-        var loginResponse = JsonSerializer.Deserialize<LoginResponseDto>(json) ??
-            throw new ArgumentNullException(nameof(json) + " is null");
+        var loginResponse = JsonSerializer.Deserialize<LoginResponseDto>(json);
+
+        if (loginResponse is null)
+            return (null, new()
+            {
+                Title = "Сервер вернул некорректный ответ"
+            });
 
         _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", loginResponse.Token);
 
-        return loginResponse;
+        return (loginResponse, null);
     }
 }

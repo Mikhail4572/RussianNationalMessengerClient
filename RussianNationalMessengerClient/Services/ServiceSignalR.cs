@@ -22,13 +22,12 @@ public class ServiceSignalR
     public ServiceSignalR(MessengerState messengerState) =>
         _messengerState = messengerState;
 
-    public async Task<LoginResponseDto> AuthorizationAsync(string username, string password, IProgress<int>? progress = null)
+    public async Task<LoginResponseDto> AuthorizationAsync(LoginResponseDto loginResponse, IProgress<int>? progress = null)
     {
-        progress?.Report(10);
-        var loginResponse = await RequestToApiRNM.Login(username, password);
-
         if (string.IsNullOrEmpty(loginResponse.Token))
             throw new ArgumentNullException(nameof(loginResponse.Token) + " is null or empty");
+
+        progress?.Report(10);
 
         progress?.Report(40);
 
@@ -37,7 +36,6 @@ public class ServiceSignalR
         progress?.Report(100);
 
         return loginResponse;
-
     }
 
     private async Task<HubConnection> ConnectToHub(string token)
@@ -62,7 +60,7 @@ public class ServiceSignalR
         });
 
 
-        connection.On<string, Chat, Message>("onCreateChat", (oldChatId, chat, firstMessage) =>
+        connection.On<Chat, Message>("onCreateChat", (chat, firstMessage) =>
         {
             App.Current.Dispatcher.Invoke(() =>
             {
