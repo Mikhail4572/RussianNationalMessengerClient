@@ -25,6 +25,9 @@ public class Message
     [JsonPropertyName("isDeleted")]
     public bool IsDeleted { get; set; } = false;
 
+    [JsonPropertyName("attachments")]
+    public List<Attachment>? Attachments { get; set; } = null;
+
     [JsonIgnore]
     public string SentAtFormat => $"{SentAt.ToLocalTime():dd:MM:yyyy HH:mm:ss}";
 }
