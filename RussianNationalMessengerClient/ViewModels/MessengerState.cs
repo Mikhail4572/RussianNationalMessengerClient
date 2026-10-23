@@ -1,19 +1,16 @@
 ﻿using RussianNationalMessengerClient.Classes;
 using RussianNationalMessengerClient.Models;
-using RussianNationalMessengerClient.Services;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-using System.Windows.Input;
+using System.Collections.Concurrent;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
 public class MessengerState : ViewModelBase
 {
+    //key - chatId value - ChatViewModel
     private readonly ConcurrentDictionary<string, ChatViewModel> _chatCache = new();
 
+    // список всех чатов
     public ObservableCollection<ChatViewModel> Chats { get; } = [];
 
     public Account? SelectedAccount
@@ -64,14 +61,15 @@ public class MessengerState : ViewModelBase
                 existingChat.Update(chat);
                 continue;
             }
-
+             
             ChatViewModel vm = _factory.Create(chat);
-
-            //_chatCache.Add(chat.Id, vm);
 
             _chatCache[chat.Id] = vm;
 
             Chats.Add(vm);
         }
     }
+
+
+
 }

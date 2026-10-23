@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RussianNationalMessengerClient.Classes;
 using RussianNationalMessengerClient.Services;
+using RussianNationalMessengerClient.Services.ChatServer;
 using RussianNationalMessengerClient.ViewModels;
 using RussianNationalMessengerClient.Views.Windows;
 using System.Windows;
