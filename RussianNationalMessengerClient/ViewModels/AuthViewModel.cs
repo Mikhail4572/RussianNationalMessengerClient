@@ -42,6 +42,8 @@ public class AuthViewModel : ViewModelBase
 
             await _service.Connection.InvokeAsync("GetChats");
 
+            progress.Report(100);
+
             if (_service.Connection.State == HubConnectionState.Connected)
                 _navigation.NavigateTo<ChatsViewModel>();
         }
@@ -99,7 +101,8 @@ public class AuthViewModel : ViewModelBase
     private readonly NavigationService _navigation;
     private readonly RequestToApiRNM _client;
 
-    public AuthViewModel(ServiceSignalR service, NavigationService navigation, 
+    public AuthViewModel(
+        ServiceSignalR service, NavigationService navigation, 
         AuthState authState, RequestToApiRNM client)
     {
         _client = client;

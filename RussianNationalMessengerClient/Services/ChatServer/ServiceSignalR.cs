@@ -30,8 +30,6 @@ public partial class ServiceSignalR
 
         Connection = await ConnectToHub(loginResponse.Token);
 
-        progress?.Report(100);
-
         return loginResponse;
     }
 
