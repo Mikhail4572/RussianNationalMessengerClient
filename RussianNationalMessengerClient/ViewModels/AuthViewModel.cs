@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using System.Net.Http;
 using System.Windows;
+using RussianNationalMessengerClient.Services.ChatServer;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
@@ -21,7 +22,7 @@ public class AuthViewModel : ViewModelBase
             ArgumentException.ThrowIfNullOrWhiteSpace(Login.UserName, nameof(Login.UserName));
             ArgumentException.ThrowIfNullOrWhiteSpace(Login.Password, nameof(Login.Password));
 
-            var loginResult = await RequestToApiRNM.Login(Login.UserName, Login.Password);
+            var loginResult = await _client.Login(Login.UserName, Login.Password);
 
             if(loginResult.loginResponseDto is null)
             {
@@ -96,9 +97,12 @@ public class AuthViewModel : ViewModelBase
     private readonly AuthState _authState;
     private readonly ServiceSignalR _service;
     private readonly NavigationService _navigation;
+    private readonly RequestToApiRNM _client;
 
-    public AuthViewModel(ServiceSignalR service, NavigationService navigation, AuthState authState)
+    public AuthViewModel(ServiceSignalR service, NavigationService navigation, 
+        AuthState authState, RequestToApiRNM client)
     {
+        _client = client;
         _service = service;
         _navigation = navigation;
         _authState = authState;

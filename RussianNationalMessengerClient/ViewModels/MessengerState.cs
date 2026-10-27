@@ -48,7 +48,6 @@ public class MessengerState : ViewModelBase
     public ChatViewModel? GetChat(string chatId)
     {
         _chatCache.TryGetValue(chatId, out ChatViewModel? chat);
-
         return chat;
     }
 
@@ -61,7 +60,7 @@ public class MessengerState : ViewModelBase
                 existingChat.Update(chat);
                 continue;
             }
-             
+            
             ChatViewModel vm = _factory.Create(chat);
 
             _chatCache[chat.Id] = vm;
@@ -69,7 +68,4 @@ public class MessengerState : ViewModelBase
             Chats.Add(vm);
         }
     }
-
-
-
 }
