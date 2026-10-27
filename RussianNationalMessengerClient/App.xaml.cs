@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RussianNationalMessengerClient.Classes;
-using RussianNationalMessengerClient.Services;
-using RussianNationalMessengerClient.Services.ChatServer;
-using RussianNationalMessengerClient.ViewModels;
+﻿using RussianNationalMessengerClient.Services.ChatServer;
 using RussianNationalMessengerClient.Views.Windows;
+using RussianNationalMessengerClient.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using RussianNationalMessengerClient.Services;
+using RussianNationalMessengerClient.Classes;
 using System.Windows;
 
 namespace RussianNationalMessengerClient;
@@ -25,7 +25,7 @@ public partial class App : Application
         NavigationService navigation = Services.GetRequiredService<NavigationService>();
 
         navigation.NavigateTo<AuthViewModel>();
-
+        
         MainWindow mainWindow = Services.GetRequiredService<MainWindow>();
 
         mainWindow.Show();
