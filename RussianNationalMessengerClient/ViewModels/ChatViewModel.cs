@@ -26,7 +26,7 @@ public class ChatViewModel : ViewModelBase
 
             return interlocutor;
         }
-    }// Chat.Members.FirstOrDefault(x => x != _authState.CurrentUser.Username) ?? string.Empty;
+    }
 
     public string LastMessageContent
     {
