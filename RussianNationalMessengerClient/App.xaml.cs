@@ -36,7 +36,7 @@ public partial class App : Application
         // Singleton
 
         services.AddSingleton<ServiceSignalR>();
-
+        
         services.AddSingleton<RequestToApiRNM>();
 
         services.AddSingleton<NavigationService>();

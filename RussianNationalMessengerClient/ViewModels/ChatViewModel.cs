@@ -15,7 +15,18 @@ public class ChatViewModel : ViewModelBase
 
     public ObservableCollection<Message> Messages { get; set; } = [];
 
-    public string DisplayName => Chat.Members.FirstOrDefault(x => x != _authState.CurrentUser.Username) ?? string.Empty;
+    public string DisplayName 
+    {
+        get
+        {
+            if (Chat.IsGroup)
+                return Chat.Name ?? "No name group";
+
+            var interlocutor = Chat.Members.FirstOrDefault(x => x != _authState.CurrentUser.Username, string.Empty);
+
+            return interlocutor;
+        }
+    }// Chat.Members.FirstOrDefault(x => x != _authState.CurrentUser.Username) ?? string.Empty;
 
     public string LastMessageContent
     {

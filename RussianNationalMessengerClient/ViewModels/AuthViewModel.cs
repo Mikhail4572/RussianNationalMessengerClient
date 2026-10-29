@@ -1,18 +1,15 @@
-﻿using RussianNationalMessengerClient.Views.Windows;
+﻿using RussianNationalMessengerClient.Services.ChatServer;
 using RussianNationalMessengerClient.Services;
 using RussianNationalMessengerClient.Classes;
 using Microsoft.AspNetCore.SignalR.Client;
 using RussianNationalMessengerClient.Dtos;
-using System.ComponentModel;
 using System.Windows.Input;
 using System.Net.Http;
-using System.Windows;
-using RussianNationalMessengerClient.Services.ChatServer;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
 public class AuthViewModel : ViewModelBase
-{
+{ 
     public ICommand LoginCommand => new RelayCommand(async _ =>
     {
         IProgress<int> progress = new Progress<int>(value => Value = value);
@@ -110,6 +107,4 @@ public class AuthViewModel : ViewModelBase
         _navigation = navigation;
         _authState = authState;
     }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 }

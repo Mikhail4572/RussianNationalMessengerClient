@@ -1,4 +1,5 @@
-﻿using RussianNationalMessengerClient.Models;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.ViewModels;
 using RussianNationalMessengerClient.Views.Windows;
 using System;
@@ -46,4 +47,10 @@ public partial class ServiceSignalR
             vm?.SelectedChat = chatVM;
         });
     }
+
+    public async Task CreateChatAsync(Message message, string groupName, string[]members) =>
+        await Connection.InvokeAsync("CreateChat", message, groupName, members);
+
+    public async Task DeleteChatAsync(string chatId) =>
+        await Connection.InvokeAsync("DeleteChat", chatId);
 }

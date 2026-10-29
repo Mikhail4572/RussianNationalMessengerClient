@@ -1,7 +1,7 @@
 ﻿using RussianNationalMessengerClient.Classes;
 using System.Collections.Specialized;
 using RussianNationalMessengerClient.Models;
-using RussianNationalMessengerClient.Services;
+using RussianNationalMessengerClient.Services.ChatServer;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

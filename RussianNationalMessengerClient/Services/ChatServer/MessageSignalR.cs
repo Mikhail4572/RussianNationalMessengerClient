@@ -1,11 +1,12 @@
 ﻿using RussianNationalMessengerClient.ViewModels;
 using RussianNationalMessengerClient.Models;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace RussianNationalMessengerClient.Services.ChatServer;
 
 public partial class ServiceSignalR
 {
-    public async Task OnMessages(string chatId, List<Message> messages) 
+    public async Task OnMessages(string chatId, List<Message> messages)
     {
         App.Current.Dispatcher.Invoke(() =>
         {
@@ -72,4 +73,13 @@ public partial class ServiceSignalR
 
         chat.Update(chat.Chat);
     }
+
+    public async Task SendMessage(Message message) =>
+        await Connection.InvokeAsync("SendMessage", message);
+
+    public async Task DeleteMessageAsync(string messageId, string chatId) =>
+        await Connection.InvokeAsync("RemoveMessage", messageId, chatId);
+
+    public async Task GetMessagesAsync(string chatId) =>
+        await Connection.InvokeAsync("GetMessages", chatId);
 }
