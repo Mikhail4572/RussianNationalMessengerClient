@@ -5,12 +5,6 @@ namespace RussianNationalMessengerClient.Services.ChatServer;
 
 public partial class ServiceSignalR
 {
-    public event Action<List<Account>>? OnUsersFound;
-
-    public async Task OnSearchUsers(List<Account> searchUsers) =>
-        OnUsersFound?.Invoke(searchUsers);
-
-
-    public async Task GetUsersByNameAsync(string search) =>
-        await Connection.InvokeAsync("GetUsersByName", search);
+    public async Task<List<Account>> GetUsersByNameAsync(string search) =>
+        await Connection.InvokeAsync<List<Account>>("GetUsersByName", search);
 }

@@ -5,11 +5,19 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       xmlns:vm="clr-namespace:RussianNationalMessengerClient.ViewModels"
+      xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+      xmlns:converters="clr-namespace:RussianNationalMessengerClient.Converters"
       xmlns:views="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <vm:ChatViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <converters:FileNameToExtensionConverter x:Key="fileNameToExtensionConverter"/>
+    </UserControl.Resources>
 
-    <Grid Background="#f1f1f1" RowDefinitions="auto, *, auto">
+    <Grid Background="#f1f1f1" RowDefinitions="auto, *, auto, auto">
         <Grid ColumnDefinitions="auto, *">
             <Grid RowDefinitions="*, auto">
                 <!--Имя собеседника-->
@@ -22,42 +30,10 @@
         <!--Чат-->
         <!--<ListView Grid.Row="1" HorizontalContentAlignment="Stretch" x:Name="LvMessages"
           ItemsSource="{Binding Messages}" SelectedItem="{Binding DataContext.SelectedMessage, RelativeSource={RelativeSource AncestorType=views:ChatsPage}}">-->
-        <!--16 у меня нет возлюбленной, а может и есть-->
-        <ListView Grid.Row="1" HorizontalContentAlignment="Stretch"
+        <ListView Grid.Row="1" HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource TransparentListViewItemStyle}"
                   x:Name="LvMessages" ItemsSource="{Binding Messages}"
                   ScrollViewer.CanContentScroll="False">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="BorderBrush" Value="Transparent"/>
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListViewItem">
-                                <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                                    <ContentPresenter />
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="Transparent"/>
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Foreground" 
-                            Value="{Binding RelativeSource={RelativeSource Self}, Path=Foreground}"/>
-                        </Trigger>
-                        <Trigger Property="IsFocused" Value="True">
-                            <Setter Property="BorderBrush" Value="Transparent"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </ListView.ItemContainerStyle>
+           
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border HorizontalAlignment="Left" BorderThickness="1" Padding="3" Margin="10 5 0 0"
@@ -69,12 +45,22 @@
                                 <!--<MenuItem Header="Копировать" Command="{Binding DataContext.CopyChatCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}"/>-->
                             </ContextMenu>
                         </Border.ContextMenu>
-                        <Grid HorizontalAlignment="Center" RowDefinitions="auto, *, auto" MaxWidth="400">
-                            <TextBlock Foreground="Gray" Text="{Binding Author}" FontSize="12"/>
+                        <Grid HorizontalAlignment="Center" RowDefinitions="auto, auto, *, auto" MaxWidth="400">
+                            <ListBox ItemsSource="{Binding Attachments}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+
+                            <TextBlock Grid.Row="1" Foreground="Gray" Text="{Binding Author}" FontSize="12"/>
                             <TextBox TextWrapping="Wrap"
                                      IsReadOnly="True"
                                      Text="{Binding Content}"
-                                     Grid.Row="1" FontSize="13">
+                                     Grid.Row="2" FontSize="13">
+                                
                                 <TextBox.Resources>
                                     <Style TargetType="TextBox">
                                         <Setter Property="BorderThickness" Value="0"/>
@@ -83,31 +69,53 @@
                                     </Style>
                                 </TextBox.Resources>
                             </TextBox>
-                            <Label Grid.Row="2" Foreground="lightgray" FontSize="10" Content="{Binding SentAtFormat}"/>
+                            <Label Grid.Row="3" Foreground="lightgray" FontSize="10" Content="{Binding SentAtFormat}"/>
                         </Grid>
                     </Border>            
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <Grid Grid.Row="2" ColumnDefinitions="*, auto" Margin="5">
-            <TextBox Text="{Binding DataContext.Content, 
-                RelativeSource={RelativeSource AncestorType=views:ChatsPage}, UpdateSourceTrigger=PropertyChanged}"
+        <!--Вложения-->
+        <ListView Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemsSource="{Binding FilePaths}" Margin="0 10">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border Height="50" Width="50" Background="LightGray" BorderThickness="8" BorderBrush="gray" Margin="0 0 5 0">
+                        <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                               Content="{Binding , Converter={StaticResource fileNameToExtensionConverter}}"/>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        
+        <Grid Grid.Row="3" ColumnDefinitions="auto, *, auto" Margin=" 0 5 5 5">
+
+            <Button Command="{Binding AddAttachment}">
+                <Button.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Margin" Value="5"/>
+                    </Style>
+                </Button.Resources>                
+                <Button.Content>
+                    <svgc:SvgViewbox Source="/Icons/attachFile.svg" 
+                        Height="20" Width="20" Stretch="Uniform"/>
+                </Button.Content>
+            </Button>
+            
+            <TextBox Text="{Binding Content}" Grid.Column="1"
                      FontSize="15" Padding="2" Margin="0 0 15 0" MaxHeight="100">
 
                 <TextBox.InputBindings>
-                    <KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding DataContext.PasteContentCommand, 
-                        RelativeSource={RelativeSource AncestorType=views:ChatsPage}}" />
-
-                    <KeyBinding Key="Enter" Command="{Binding DataContext.SendMessageCommand, 
-                        RelativeSource={RelativeSource AncestorType=views:ChatsPage}}" />
+                    <KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding PasteContentCommand}" />
+                    <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
                 </TextBox.InputBindings>
 
             </TextBox>
 
-            <Button Content="Отправить" Command="{Binding DataContext.SendMessageCommand,
-                RelativeSource={RelativeSource AncestorType=views:ChatsPage}}" VerticalAlignment="Bottom"
-                    Grid.Column="1" Padding="5"/>
+            <Button Content="Отправить" Command="{Binding SendMessageCommand}" VerticalAlignment="Bottom"
+                    Grid.Column="2" Padding="7"/>
         </Grid>
     </Grid>
 </UserControl>

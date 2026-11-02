@@ -1,10 +1,11 @@
-﻿using RussianNationalMessengerClient.Services.ChatServer;
-using RussianNationalMessengerClient.Services;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using RussianNationalMessengerClient.Classes;
-using Microsoft.AspNetCore.SignalR.Client;
 using RussianNationalMessengerClient.Dtos;
-using System.Windows.Input;
+using RussianNationalMessengerClient.Services;
+using RussianNationalMessengerClient.Services.ChatServer;
+using RussianNationalMessengerClient.Services.RNMApi;
 using System.Net.Http;
+using System.Windows.Input;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
@@ -96,11 +97,11 @@ public class AuthViewModel : ViewModelBase
     private readonly AuthState _authState;
     private readonly ServiceSignalR _service;
     private readonly NavigationService _navigation;
-    private readonly RequestToApiRNM _client;
+    private readonly ApiRNM _client;
 
     public AuthViewModel(
         ServiceSignalR service, NavigationService navigation, 
-        AuthState authState, RequestToApiRNM client)
+        AuthState authState, ApiRNM client)
     {
         _client = client;
         _service = service;

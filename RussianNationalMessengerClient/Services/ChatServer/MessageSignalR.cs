@@ -1,24 +1,12 @@
-﻿using RussianNationalMessengerClient.ViewModels;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using RussianNationalMessengerClient.Dtos;
 using RussianNationalMessengerClient.Models;
-using Microsoft.AspNetCore.SignalR.Client;
+using RussianNationalMessengerClient.ViewModels;
 
 namespace RussianNationalMessengerClient.Services.ChatServer;
 
 public partial class ServiceSignalR
 {
-    public async Task OnMessages(string chatId, List<Message> messages)
-    {
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            ChatViewModel? chat = _messengerState.GetChat(chatId);
-
-            if (chat is null)
-                return;
-
-            chat.LoadMessages(messages);
-        });
-    }
-
     public async Task OnMessage(Message msg)
     {
         App.Current.Dispatcher.Invoke(() =>
@@ -32,7 +20,7 @@ public partial class ServiceSignalR
             {
                 Author = msg.Author,
                 Content = msg.Content,
-                MessageId = msg.Id,
+                MessageId = msg.MessageId,
                 SentAt = msg.SentAt
             };
 
@@ -42,7 +30,6 @@ public partial class ServiceSignalR
         });
     }
 
-
     public async Task OnRemoveMessage(string chatId, string messageId)
     {
         ChatViewModel? chat = _messengerState.GetChat(chatId);
@@ -50,7 +37,7 @@ public partial class ServiceSignalR
         if (chat is null)
             return;
 
-        var remove_message = chat.Messages.FirstOrDefault(m => m.Id == messageId);
+        var remove_message = chat.Messages.FirstOrDefault(m => m.MessageId == messageId);
 
         if (remove_message is null)
             return;
@@ -58,13 +45,13 @@ public partial class ServiceSignalR
         App.Current.Dispatcher.Invoke(() =>
             chat.Messages.Remove(remove_message));
 
-        if (chat.Chat.LastMessage is not null && remove_message.Id == chat.Chat.LastMessage.MessageId)
+        if (chat.Chat.LastMessage is not null && remove_message.MessageId == chat.Chat.LastMessage.MessageId)
         {
             var last = chat.Messages.LastOrDefault();
 
             chat.Chat.LastMessage = last is null ? null : new()
             {
-                MessageId = last.Id,
+                MessageId = last.MessageId,
                 Author = last.Author,
                 Content = last.Content,
                 SentAt = last.SentAt,
@@ -74,12 +61,24 @@ public partial class ServiceSignalR
         chat.Update(chat.Chat);
     }
 
-    public async Task SendMessage(Message message) =>
-        await Connection.InvokeAsync("SendMessage", message);
+    //public async Task SendMessage(Message message) =>
+    //    await Connection.SendAsync("SendMessage", message);
 
     public async Task DeleteMessageAsync(string messageId, string chatId) =>
-        await Connection.InvokeAsync("RemoveMessage", messageId, chatId);
+        await Connection.SendAsync("RemoveMessage", messageId, chatId);
 
-    public async Task GetMessagesAsync(string chatId) =>
-        await Connection.InvokeAsync("GetMessages", chatId);
+    public async Task GetMessagesAsync(string chatId)
+    {
+        List<Message> messages = await Connection.InvokeAsync<List<Message>>("GetMessages", chatId);
+
+        App.Current.Dispatcher.Invoke(() =>
+        {
+            ChatViewModel? chat = _messengerState.GetChat(chatId);
+
+            if (chat is null)
+                return;
+
+            chat.LoadMessages(messages);
+        });
+    }
 }

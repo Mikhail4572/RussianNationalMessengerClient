@@ -1,10 +1,12 @@
 ﻿using RussianNationalMessengerClient.Classes;
-using System.Collections.Specialized;
+using RussianNationalMessengerClient.Dtos;
 using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.Services.ChatServer;
+using RussianNationalMessengerClient.Services.RNMApi;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -14,11 +16,11 @@ namespace RussianNationalMessengerClient.ViewModels;
 public class ChatsViewModel : ViewModelBase
 {
     private readonly MessengerState _messengerState;
+    private readonly ApiRNM _client;
 
     private readonly ServiceSignalR _signalR;
 
     private readonly AuthState _authState;
-
     public ObservableCollection<ChatViewModel> Chats => _messengerState.Chats;
     public ObservableCollection<Account> SearchUsers { get; set; } = [];
 
@@ -55,7 +57,7 @@ public class ChatsViewModel : ViewModelBase
 
             SearchUserContent = null;
 
-            ChatViewModelFactory cvmf = new(_authState);
+            ChatViewModelFactory cvmf = new(_authState, _client);
             SelectedChat = cvmf.Create(new()
             {
                 Id = Guid.NewGuid().ToString(),
@@ -111,7 +113,7 @@ public class ChatsViewModel : ViewModelBase
         }
     } = false;
 
-    public ChatsViewModel(MessengerState messengerState, ServiceSignalR signalR, AuthState authState)
+    public ChatsViewModel(MessengerState messengerState, ServiceSignalR signalR, AuthState authState, ApiRNM client)
     {
         _authState = authState;
         _messengerState = messengerState;
@@ -136,35 +138,7 @@ public class ChatsViewModel : ViewModelBase
                 default: break;
             }
         };
-
-        _signalR.OnUsersFound += searchUsers =>
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                SearchUsers.Clear();
-
-                // формируем список из тех контактов, чаты с которыми уже существуют
-                List<Account> generalChatInSearch = [.. searchUsers.Where(x => Chats.Select(x => x.Chat).SelectMany(x => x.Members)
-                    .Contains(x.Username) && x.Username != _authState.CurrentUser.Username)];
-
-                // удаляем аккаунты из списка тех с кем чат уже есть
-                foreach (var item in generalChatInSearch)
-                    searchUsers.Remove(item);
-
-                // складываем списки таким образом, чтоб с начала были те с кем есть чат, а потом с кем нет
-                searchUsers = [.. generalChatInSearch.Concat(searchUsers)];
-
-                foreach (var item in searchUsers)
-                    SearchUsers.Add(item);
-            });
-        };
     }
-
-    public ICommand PasteContentCommand => new RelayCommand(_ =>
-    {
-        if (Clipboard.ContainsText())
-            Content += Clipboard.GetText();
-    });
 
     public ICommand SearchUserCommand => new RelayCommand(async _ =>
     {
@@ -174,32 +148,26 @@ public class ChatsViewModel : ViewModelBase
             return;
         }
 
-        await _signalR.GetUsersByNameAsync(SearchUserContent);
-    });
+         var searchUsers = await _signalR.GetUsersByNameAsync(SearchUserContent);
 
-    public ICommand SendMessageCommand => new RelayCommand(async _ =>
-    {
-        if (SelectedChat is null)
-            return;
+        searchUsers ??= [];
 
-        if (string.IsNullOrWhiteSpace(Content))
-            return;
+        SearchUsers.Clear();
 
-        Message message = new()
-        {
-            Id = Guid.NewGuid().ToString(),
-            ChatId = SelectedChat.Chat.Id,
-            Content = Content.Trim(),
-            IsDeleted = false,
-            IsEdited = false,
-            SentAt = DateTime.UtcNow
-        };
+        // формируем список из тех контактов, чаты с которыми уже существуют
+        List<Account> generalChatInSearch = [.. searchUsers.Where(x => Chats.Select(x => x.Chat).SelectMany(x => x.Members)
+                    .Contains(x.Username) && x.Username != _authState.CurrentUser.Username)];
 
-        var task = SelectedChat.Chat.IsCreated ? _signalR.SendMessage(message) : _signalR.CreateChatAsync(message, null, [.. SelectedChat.Chat.Members]);
+        // удаляем аккаунты из списка тех с кем чат уже есть
+        foreach (var item in generalChatInSearch)
+            searchUsers.Remove(item);
 
-        await task;
+        // складываем списки таким образом, чтоб с начала были те с кем есть чат, а потом с кем нет
+        searchUsers = [.. generalChatInSearch.Concat(searchUsers)];
 
-        Content = null;
+        foreach (var item in searchUsers)
+            SearchUsers.Add(item);
+
     });
 
     public ICommand DeleteChatCommand => new RelayCommand(async _ =>
@@ -219,7 +187,7 @@ public class ChatsViewModel : ViewModelBase
         if (p is not Message message)
             return;
 
-        await _signalR.DeleteMessageAsync(message.Id, message.ChatId);
+        await _signalR.DeleteMessageAsync(message.MessageId, message.ChatId);
     });
 
     private async Task LoadMessagesAsync(ChatViewModel chat) =>

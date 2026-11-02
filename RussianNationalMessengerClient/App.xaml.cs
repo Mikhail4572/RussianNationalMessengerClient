@@ -1,9 +1,10 @@
-﻿using RussianNationalMessengerClient.Services.ChatServer;
-using RussianNationalMessengerClient.Views.Windows;
-using RussianNationalMessengerClient.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using RussianNationalMessengerClient.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RussianNationalMessengerClient.Classes;
+using RussianNationalMessengerClient.Services;
+using RussianNationalMessengerClient.Services.ChatServer;
+using RussianNationalMessengerClient.Services.RNMApi;
+using RussianNationalMessengerClient.ViewModels;
+using RussianNationalMessengerClient.Views.Windows;
 using System.Windows;
 
 namespace RussianNationalMessengerClient;
@@ -37,7 +38,7 @@ public partial class App : Application
 
         services.AddSingleton<ServiceSignalR>();
         
-        services.AddSingleton<RequestToApiRNM>();
+        services.AddSingleton<ApiRNM>();
 
         services.AddSingleton<NavigationService>();
 

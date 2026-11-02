@@ -1,23 +1,15 @@
-﻿using RussianNationalMessengerClient.Dtos;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using RussianNationalMessengerClient.Dtos;
+using System;
+using System.Collections.Generic;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
-using System.Net.Http;
 
-namespace RussianNationalMessengerClient.Services;
+namespace RussianNationalMessengerClient.Services.RNMApi;
 
-public class RequestToApiRNM
+public partial class ApiRNM
 {
-    private readonly HttpClient _httpClient;
-
-    public RequestToApiRNM()
-    {
-        _httpClient = new()
-        {
-            Timeout = TimeSpan.FromSeconds(30)
-        };
-    }
-
     public async Task<(LoginResponseDto? loginResponseDto, ProblemDetails? problem)> Login(string username, string password)
     {
         LoginDto login = new()
@@ -26,7 +18,7 @@ public class RequestToApiRNM
             Password = password
         };
 
-        var response = await _httpClient.PostAsJsonAsync("https://localhost:7110/api/Login/login", login);
+        var response = await _httpClient.PostAsJsonAsync("Login/login", login);
 
         if (!response.IsSuccessStatusCode)
             return (null, await response.Content.ReadFromJsonAsync<ProblemDetails>());

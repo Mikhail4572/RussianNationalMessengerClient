@@ -9,8 +9,12 @@ namespace RussianNationalMessengerClient.Converters;
 
 public class BoolToVisibilityConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-        ((bool)value) ? Visibility.Visible : Visibility.Collapsed;
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if(bool.TryParse(value.ToString(), out var flag))
+            return flag ? Visibility.Visible : Visibility.Collapsed;
 
+        return false;
+    }
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
 }

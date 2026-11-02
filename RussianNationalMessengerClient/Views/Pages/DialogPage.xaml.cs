@@ -1,4 +1,5 @@
-﻿using RussianNationalMessengerClient.Models;
+﻿using RussianNationalMessengerClient.Dtos;
+using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.Services;
 using RussianNationalMessengerClient.ViewModels;
 using RussianNationalMessengerClient.Views.Windows;
@@ -26,11 +27,12 @@ public partial class DialogPage : UserControl
     }
     private void MenuItemCopyMessage_Click(object sender, RoutedEventArgs e) 
     {
-        if (sender is not MenuItem menuItem || menuItem.DataContext is not Message message)
+        if (sender is not MenuItem menuItem || menuItem.DataContext is not Message message || message.Content is not string content)
             return;
 
-        Clipboard.SetText(message.Content);
+        Clipboard.SetText(content);
     }
+
     private void MenuItemRemoveMessage_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not MenuItem menuItem)

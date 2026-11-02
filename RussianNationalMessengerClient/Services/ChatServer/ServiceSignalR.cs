@@ -50,13 +50,13 @@ public partial class ServiceSignalR
 
 
         // Пользователи
-        connection.On<List<Account>>("onSearchUsers", OnSearchUsers);
+        // поки немає
 
 
         // Сообщения
         connection.On<string, string>("onRemoveMessage", OnRemoveMessage);
 
-        connection.On<string, List<Message>>("onMessages", OnMessages);
+       // connection.On<string, List<ResponseMessageDto>>("onMessages", OnMessages);
 
         connection.On<Message>("onMessage", OnMessage);
 
@@ -68,6 +68,6 @@ public partial class ServiceSignalR
     }
 
     private async Task Connection_Closed(Exception? e) =>
-       MessageBox.Show($"соединение разорванно\n{e?.Message}\nState is {Connection.State}");
+       MessageBox.Show($"соединение разорванно\n{e?.Message}\nConnection state is {Connection.State}");
 }
 

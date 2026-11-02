@@ -9,10 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Icons\attachFile.svg" />
     <None Remove="Icons\closeIcon.svg" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Icons\attachFile.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icons\closeIcon.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using RussianNationalMessengerClient.Dtos;
 using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.ViewModels;
 using RussianNationalMessengerClient.Views.Windows;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace RussianNationalMessengerClient.Services.ChatServer;
+
 
 public partial class ServiceSignalR
 {
@@ -32,25 +34,29 @@ public partial class ServiceSignalR
 
     public async Task OnCreateChat(Chat chat, Message firstMessage)
     {
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            _messengerState.LoadChats([chat]);
 
-            var chatVM = _messengerState.GetChat(chat.Id);
+        throw new NotImplementedException();
 
-            chatVM?.Messages.Add(firstMessage);
+        //App.Current.Dispatcher.Invoke(() =>
+        //{
+        //    _messengerState.LoadChats([chat]);
 
-            var vm = (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext as
-                NavigationService)?.CurrentViewModel as ChatsViewModel;
+        //    var chatVM = _messengerState.GetChat(chat.Id);
 
-            vm?.SelectedAccount = null;
-            vm?.SelectedChat = chatVM;
-        });
+        //    chatVM?.Messages.Add(firstMessage);
+
+        //    var vm = (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext as
+        //        NavigationService)?.CurrentViewModel as ChatsViewModel;
+
+        //    vm?.SelectedAccount = null;
+        //    vm?.SelectedChat = chatVM;
+        //});
     }
 
     public async Task CreateChatAsync(Message message, string groupName, string[]members) =>
-        await Connection.InvokeAsync("CreateChat", message, groupName, members);
+        await Connection.SendAsync("CreateChat", message, groupName, members);
 
     public async Task DeleteChatAsync(string chatId) =>
-        await Connection.InvokeAsync("DeleteChat", chatId);
+        await Connection.SendAsync("DeleteChat", chatId);
+
 }

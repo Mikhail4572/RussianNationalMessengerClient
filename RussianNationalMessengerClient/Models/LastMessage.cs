@@ -14,14 +14,14 @@ public class LastMessage
     public string Author { get; set; }
 
     [JsonPropertyName("content")]
-    public string Content
+    public string? Content
     {
-        get => field.Replace("\r", " ").Replace("\n", "").Replace("\t", " ");
+        get => field?.Replace("\r", " ").Replace("\n", "").Replace("\t", " ");
         set;
     }
 
     [JsonPropertyName("sentAt")]
     public DateTime SentAt { get; set; }
 
-    public override string ToString() => Content;
+    public override string ToString() => Content ?? string.Empty;
 }
