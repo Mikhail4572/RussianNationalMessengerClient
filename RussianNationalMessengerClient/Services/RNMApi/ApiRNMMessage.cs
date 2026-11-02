@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RussianNationalMessengerClient.Models.UIModels;
+using RussianNationalMessengerClient.Models;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -8,7 +9,7 @@ namespace RussianNationalMessengerClient.Services.RNMApi;
 
 public partial class ApiRNM
 {
-    public async Task<(int statusCode, ProblemDetails? problem)> SendMessage(string chatId, string text, IEnumerable<UILoadAttachment> attachments)
+    public async Task<(Message? returnMessage, ProblemDetails? problem)> SendMessage(string chatId, string text, IEnumerable<UILoadAttachment> attachments)
     {
         using MultipartFormDataContent content = new();
 
@@ -24,10 +25,10 @@ public partial class ApiRNM
         var response = await _httpClient.PostAsync("Message/SendMessage", content);
 
         if(!response.IsSuccessStatusCode)
-            return ((int)response.StatusCode, await response.Content.ReadFromJsonAsync<ProblemDetails>());
+            return (null, await response.Content.ReadFromJsonAsync<ProblemDetails>());
 
-        return ((int)response.StatusCode, null);
+        Message? returnMessage = await response.Content.ReadFromJsonAsync<Message>();
+
+        return (returnMessage, null);
     }
-
-
 }

@@ -118,14 +118,36 @@ public class ChatViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(Content) && LoadAttachments.Count == 0)
             return;
 
+        Message addMessage = new()
+        {
+            MessageId = "1",
+            Author = _authState.CurrentUser.Username,
+            ChatId = Chat.Id,
+            Content = Content,
+            IsSend = null,
+            SentAt = DateTime.UtcNow,
+            UILoadAttachments = LoadAttachments.ToList()
+        };
+
+        Messages.Add(addMessage);
+
         var result = await _client.SendMessage(Chat.Id, Content, LoadAttachments);
 
         if (result.problem is not null)
         {
             MessageBox.Show($"Ошибка - {result.problem.Title}");
+            addMessage.IsSend = false;
             return;
         }
 
+        if(result.returnMessage is null)
+        {
+            MessageBox.Show($"Неизвестная ошибка");
+            Messages.Remove(addMessage);
+            return;
+        }
+
+        Messages[Messages.IndexOf(addMessage)] = result.returnMessage;
         LoadAttachments.Clear();
         Content ??= null;
     });
