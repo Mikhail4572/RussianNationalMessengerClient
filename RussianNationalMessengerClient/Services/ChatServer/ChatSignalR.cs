@@ -32,30 +32,16 @@ public partial class ServiceSignalR
         });
     }
 
-    public async Task OnCreateChat(Chat chat, Message firstMessage)
+    public async Task<Chat> CreateChatAsync(string groupName, string[] members) =>    
+        await Connection.InvokeAsync<Chat>("CreateChat", groupName, members);
+
+    public async Task OnCreateChat(Chat chat)
     {
-
-        throw new NotImplementedException();
-
-        //App.Current.Dispatcher.Invoke(() =>
-        //{
-        //    _messengerState.LoadChats([chat]);
-
-        //    var chatVM = _messengerState.GetChat(chat.Id);
-
-        //    chatVM?.Messages.Add(firstMessage);
-
-        //    var vm = (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext as
-        //        NavigationService)?.CurrentViewModel as ChatsViewModel;
-
-        //    vm?.SelectedAccount = null;
-        //    vm?.SelectedChat = chatVM;
-        //});
+        App.Current.Dispatcher.Invoke(() =>
+        {
+            _messengerState.LoadChats([chat]);
+        });
     }
-
-    public async Task CreateChatAsync(Message message, string groupName, string[]members) =>
-        await Connection.SendAsync("CreateChat", message, groupName, members);
-
     public async Task DeleteChatAsync(string chatId) =>
         await Connection.SendAsync("DeleteChat", chatId);
 

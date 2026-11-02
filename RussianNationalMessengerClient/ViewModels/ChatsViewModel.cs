@@ -39,43 +39,34 @@ public class ChatsViewModel : ViewModelBase
         get => _messengerState.SelectedAccount;
         set
         {
-
-            if (value is not null && _messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Count == 2 && x.Chat.Members.Contains(value.Username))
-                    is ChatViewModel chatVM)
-            {
-                SearchUserContent = null;
-                SelectedChat = chatVM;
-                return;
-            }
-
             _messengerState.SelectedAccount = value;
             OnPropertyChanged(nameof(SelectedAccount));
-
-            if (_messengerState.SelectedAccount is null)
-                return;
-
-            SearchUserContent = null;
-
-            ChatViewModelFactory cvmf = new(_authState, _client);
-
-            var chat = cvmf.Create(new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = null,
-                IsGroup = false,
-                CreatedAt = DateTime.UtcNow,
-                LastMessage = null,
-                IsCreated = false,
-                Members =
-               [
-                   _authState.CurrentUser.Username,
-                    _messengerState.SelectedAccount.Username
-               ]
-            });
-
-            SelectedChat = chat;
         }
     }
+
+    public ICommand OnSelectionChangedAccount => new RelayCommand(async _ =>
+    {
+
+        if (SelectedAccount is not null && _messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Count == 2 && x.Chat.Members.Contains(SelectedAccount.Username))
+               is ChatViewModel chatVM)
+        {
+            SearchUserContent = null;
+            SelectedChat = chatVM;
+            return;
+        }
+
+        if (SelectedAccount is null)
+            return;
+
+        SearchUserContent = null;
+
+        ChatViewModelFactory cvmf = new(_authState, _client);
+
+        var chat = await _signalR.CreateChatAsync(null, [SelectedAccount.Username, _authState.CurrentUser.Username]);
+
+        var chat_vm = cvmf.Create(chat);
+        SelectedChat = chat_vm;
+    });
 
     public ChatViewModel? SelectedChat
     {
@@ -85,21 +76,8 @@ public class ChatsViewModel : ViewModelBase
             _messengerState.SelectedChat = value;
             OnPropertyChanged(nameof(SelectedChat));
 
-            if (value is not null && value.Chat.IsCreated)
-            {
-                Content = null;
+            if (value is not null)
                 _ = LoadMessagesAsync(value);
-            }
-        }
-    }
-
-    public string Content
-    {
-        get => field;
-        set
-        {
-            field = value;
-            OnPropertyChanged(nameof(Content));
         }
     }
 
@@ -171,6 +149,7 @@ public class ChatsViewModel : ViewModelBase
             SearchUsers.Add(item);
 
     });
+
 
     public ICommand DeleteChatCommand => new RelayCommand(async _ =>
     {

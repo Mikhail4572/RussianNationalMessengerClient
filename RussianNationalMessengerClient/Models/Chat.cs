@@ -32,9 +32,6 @@ public class Chat : ViewModelBase
         }
     }
 
-    [JsonIgnore]
-    public bool IsCreated { get; set; } = true;
-
     public override string ToString() => LastMessage?.Content ?? string.Empty;
 
 }

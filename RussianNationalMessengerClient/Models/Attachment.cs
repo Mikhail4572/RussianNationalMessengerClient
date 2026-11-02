@@ -29,6 +29,4 @@ public class Attachment
             return ContentType[(index + 1)..];
         }
     }
-
-    public override 
 }

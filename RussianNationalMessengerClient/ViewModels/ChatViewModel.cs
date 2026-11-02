@@ -115,7 +115,7 @@ public class ChatViewModel : ViewModelBase
 
     public ICommand SendMessageCommand => new RelayCommand(async _ =>
     {
-        if (string.IsNullOrWhiteSpace(Content) && LoadAttachments.Count == 0)
+        if (string.IsNullOrWhiteSpace(Content.Trim()) && LoadAttachments.Count == 0)
             return;
 
         Message addMessage = new()
@@ -147,7 +147,14 @@ public class ChatViewModel : ViewModelBase
             return;
         }
 
-        Messages[Messages.IndexOf(addMessage)] = result.returnMessage;
+        var index = Messages.IndexOf(addMessage);
+
+        if (index != -1)
+        {
+            result.returnMessage.UILoadAttachments = addMessage.UILoadAttachments;
+            Messages[index] = result.returnMessage;
+        }
+        
         LoadAttachments.Clear();
         Content ??= null;
     });

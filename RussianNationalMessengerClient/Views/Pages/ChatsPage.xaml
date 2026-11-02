@@ -56,6 +56,13 @@
 
                 <ListView Grid.Row="1" ItemsSource="{Binding SearchUsers}" SelectedItem="{Binding SelectedAccount}"
                           Visibility="{Binding IsFocusedTbSearch, Converter={StaticResource BoolToVisCon}}">
+
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding OnSelectionChangedAccount}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <TextBlock TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Text="{Binding Username}"/>

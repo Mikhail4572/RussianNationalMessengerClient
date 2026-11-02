@@ -9,7 +9,7 @@ namespace RussianNationalMessengerClient.Services.RNMApi;
 
 public partial class ApiRNM
 {
-    public async Task<(Message? returnMessage, ProblemDetails? problem)> SendMessage(string chatId, string text, IEnumerable<UILoadAttachment> attachments)
+    public async Task<(Message? returnMessage, ProblemDetails? problem)> SendMessage(string chatId, string text, IEnumerable<UILoadAttachment> attachments = null)
     {
         using MultipartFormDataContent content = new();
 
@@ -31,4 +31,5 @@ public partial class ApiRNM
 
         return (returnMessage, null);
     }
+
 }
