@@ -1,9 +1,10 @@
 ﻿using Microsoft.Win32;
 using RussianNationalMessengerClient.Classes;
-using RussianNationalMessengerClient.Dtos;
 using RussianNationalMessengerClient.Models;
+using RussianNationalMessengerClient.Models.UIModels;
 using RussianNationalMessengerClient.Services.RNMApi;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -11,7 +12,6 @@ namespace RussianNationalMessengerClient.ViewModels;
 
 public class ChatViewModel : ViewModelBase
 {
-
     private readonly AuthState _authState;
     private readonly ApiRNM _client;
 
@@ -19,12 +19,25 @@ public class ChatViewModel : ViewModelBase
 
     public ObservableCollection<Message> Messages { get; set; } = [];
 
-    public ObservableCollection<string> FilePaths { get; set; } = [];
+    public ObservableCollection<UILoadAttachment> LoadAttachments { get; set; } = [];
+
+    public Message? SelectedMessage
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(SelectedMessage));
+        } 
+    }
 
     public string DisplayName
     {
         get
         {
+            if (Chat is null)
+                return "Chat is null";
+
             if (Chat.IsGroup)
                 return Chat.Name ?? "No name group";
 
@@ -64,11 +77,10 @@ public class ChatViewModel : ViewModelBase
         get;
         set
         {
-
+            field = value;
             OnPropertyChanged(nameof(Content));
         }
     }
-
 
     public void Update(Chat chat)
     {
@@ -95,12 +107,18 @@ public class ChatViewModel : ViewModelBase
             Content += Clipboard.GetText();
     });
 
+    public ICommand CopyChatCommand => new RelayCommand(_ =>
+    {
+        if(!string.IsNullOrEmpty(Content.Trim()))
+            Clipboard.SetText(Content);
+    });
+
     public ICommand SendMessageCommand => new RelayCommand(async _ =>
     {
-        if (string.IsNullOrWhiteSpace(Content) && FilePaths.Count == 0)
+        if (string.IsNullOrWhiteSpace(Content) && LoadAttachments.Count == 0)
             return;
 
-        var result = await _client.SendMessage(Chat.Id, Content, FilePaths);
+        var result = await _client.SendMessage(Chat.Id, Content, LoadAttachments);
 
         if (result.problem is not null)
         {
@@ -108,13 +126,13 @@ public class ChatViewModel : ViewModelBase
             return;
         }
 
-        FilePaths.Clear();
-        Content = null;
+        LoadAttachments.Clear();
+        Content ??= null;
     });
 
     public ICommand AddAttachment => new RelayCommand(async _ =>
     {
-        if (FilePaths.Count == 5)
+        if (LoadAttachments.Count == 5)
         {
             MessageBox.Show("не более 5 вложений");
             return;
@@ -127,17 +145,23 @@ public class ChatViewModel : ViewModelBase
 
         if (ofd.ShowDialog() == true)
         {
-            if ((ofd.FileNames.Length + FilePaths.Count) > 5)
+
+            if ((ofd.FileNames.Length + LoadAttachments.Count) > 5)
                 return;
 
+            string[] imageEx = [".jpg", ".png"];
+
             foreach (var item in ofd.FileNames)
-                FilePaths.Add(item);
-
+            {
+                LoadAttachments.Add(new()
+                {
+                    FullPath = item,
+                    ImageSource = imageEx.Contains(Path.GetExtension(item)) ? ConvertImage.GetImageSourceFromPath(item) : null,
+                    Stream = new FileStream(item, FileMode.Open, FileAccess.Read, FileShare.Read)
+                });
+            }
         }
-
     });
-
-    public ChatViewModel() { }
 
     public ChatViewModel(Chat chat, AuthState authState, ApiRNM client)
     {

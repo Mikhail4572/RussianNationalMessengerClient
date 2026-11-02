@@ -9,12 +9,9 @@
       xmlns:converters="clr-namespace:RussianNationalMessengerClient.Converters"
       xmlns:views="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <vm:ChatViewModel/>
-    </UserControl.DataContext>
+      d:DesignHeight="450" d:DesignWidth="800"> 
     <UserControl.Resources>
-        <converters:FileNameToExtensionConverter x:Key="fileNameToExtensionConverter"/>
+        <converters:ViewAttachmentConverter x:Key="viewAttachmentConverter"/>
     </UserControl.Resources>
 
     <Grid Background="#f1f1f1" RowDefinitions="auto, *, auto, auto">
@@ -28,10 +25,8 @@
         </Grid>
         
         <!--Чат-->
-        <!--<ListView Grid.Row="1" HorizontalContentAlignment="Stretch" x:Name="LvMessages"
-          ItemsSource="{Binding Messages}" SelectedItem="{Binding DataContext.SelectedMessage, RelativeSource={RelativeSource AncestorType=views:ChatsPage}}">-->
         <ListView Grid.Row="1" HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource TransparentListViewItemStyle}"
-                  x:Name="LvMessages" ItemsSource="{Binding Messages}"
+                  x:Name="LvMessages" ItemsSource="{Binding Messages}" SelectedItem="{Binding SelectedMessage}"
                   ScrollViewer.CanContentScroll="False">
            
             <ListView.ItemTemplate>
@@ -41,19 +36,20 @@
                         <Border.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Удалить" Click="MenuItemRemoveMessage_Click"/>
-                                <MenuItem Header="Копировать" Click="MenuItemCopyMessage_Click"/>
-                                <!--<MenuItem Header="Копировать" Command="{Binding DataContext.CopyChatCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}"/>-->
+                                <MenuItem Header="Копировать" Command="{Binding DataContext.CopyChatCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                <!--<MenuItem Header="Копировать" Click="MenuItemCopyMessage_Click"/>-->
+                                <!--<MenuItem Header="Копировать" Command="{Binding DataContext.CopyChatCommand, 
+                                    RelativeSource={RelativeSource AncestorType=ListView}}"/>-->
                             </ContextMenu>
                         </Border.ContextMenu>
                         <Grid HorizontalAlignment="Center" RowDefinitions="auto, auto, *, auto" MaxWidth="400">
                             <ListBox ItemsSource="{Binding Attachments}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        
+                                        <!--написать отображение полученных вложений-->
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-
 
                             <TextBlock Grid.Row="1" Foreground="Gray" Text="{Binding Author}" FontSize="12"/>
                             <TextBox TextWrapping="Wrap"
@@ -77,16 +73,22 @@
         </ListView>
 
         <!--Вложения-->
-        <ListView Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemsSource="{Binding FilePaths}" Margin="0 10">
-            <ListView.ItemTemplate>
+        <ListBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                 ItemsSource="{Binding LoadAttachments}" Margin="0 10">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border Height="50" Width="50" Background="LightGray" BorderThickness="8" BorderBrush="gray" Margin="0 0 5 0">
+                    <Border Height="50" Width="50" CornerRadius="8" BorderBrush="gray" Margin="0 0 5 0" BorderThickness="0.1">
                         <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                               Content="{Binding , Converter={StaticResource fileNameToExtensionConverter}}"/>
+                               Content="{Binding ., Converter={StaticResource viewAttachmentConverter}}"/>
                     </Border>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ListBox.ItemTemplate>
+        </ListBox>
         
         <Grid Grid.Row="3" ColumnDefinitions="auto, *, auto" Margin=" 0 5 5 5">
 
@@ -104,7 +106,7 @@
                 </Button.Content>
             </Button>
             
-            <TextBox Text="{Binding Content}" Grid.Column="1"
+            <TextBox Text="{Binding Content}" Grid.Column="1" VerticalAlignment="Center"
                      FontSize="15" Padding="2" Margin="0 0 15 0" MaxHeight="100">
 
                 <TextBox.InputBindings>

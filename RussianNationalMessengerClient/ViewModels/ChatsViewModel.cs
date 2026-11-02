@@ -40,9 +40,8 @@ public class ChatsViewModel : ViewModelBase
         set
         {
 
-            if (value is not null &&
-                _messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Contains(value.Username))
-                    is ChatViewModel chatVM) 
+            if (value is not null && _messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Count == 2 && x.Chat.Members.Contains(value.Username))
+                    is ChatViewModel chatVM)
             {
                 SearchUserContent = null;
                 SelectedChat = chatVM;
@@ -58,7 +57,8 @@ public class ChatsViewModel : ViewModelBase
             SearchUserContent = null;
 
             ChatViewModelFactory cvmf = new(_authState, _client);
-            SelectedChat = cvmf.Create(new()
+
+            var chat = cvmf.Create(new()
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = null,
@@ -67,11 +67,13 @@ public class ChatsViewModel : ViewModelBase
                 LastMessage = null,
                 IsCreated = false,
                 Members =
-                [
-                    _authState.CurrentUser.Username,
+               [
+                   _authState.CurrentUser.Username,
                     _messengerState.SelectedAccount.Username
-                ]
+               ]
             });
+
+            SelectedChat = chat;
         }
     }
 

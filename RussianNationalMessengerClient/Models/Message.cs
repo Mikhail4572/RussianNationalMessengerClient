@@ -1,4 +1,6 @@
-﻿using RussianNationalMessengerClient.Dtos;
+﻿using RussianNationalMessengerClient.Models.UIModels;
+using RussianNationalMessengerClient.Dtos;
+using RussianNationalMessengerClient.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace RussianNationalMessengerClient.Models;
 
-public class Message
+public class Message : ViewModelBase
 {
     [JsonPropertyName("messageId")]
     public string MessageId { get; set; }
@@ -25,6 +27,20 @@ public class Message
 
     [JsonPropertyName("attachments")]
     public List<Attachment>? Attachments { get; set; }
+
+    [JsonIgnore]
+    public List<UILoadAttachment> UILoadAttachments { get; set; }
+
+    [JsonIgnore]    
+    public bool? IsSend 
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(IsSend));
+        }
+    }
 
     [JsonIgnore]
     public string SentAtFormat => $"{SentAt.ToLocalTime():dd:MM:yyyy HH:mm:ss}";
