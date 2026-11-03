@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       xmlns:vm="clr-namespace:RussianNationalMessengerClient.ViewModels"
       xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+      xmlns:models="clr-namespace:RussianNationalMessengerClient.Models"
       xmlns:converters="clr-namespace:RussianNationalMessengerClient.Converters"
       xmlns:views="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       mc:Ignorable="d"
@@ -45,8 +46,13 @@
                         <Grid HorizontalAlignment="Center" RowDefinitions="auto, auto, *, auto" MaxWidth="400">
                             <ListBox ItemsSource="{Binding Attachments}">
                                 <ListBox.ItemTemplate>
-                                    <DataTemplate>
+                                    <DataTemplate DataType="{x:Type models:Attachment}">
                                         <!--написать отображение полученных вложений-->
+                                        <Grid>
+                                            <Border>
+                                                <Label Content="{Binding GetExtension}"/>
+                                            </Border>
+                                        </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
