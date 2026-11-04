@@ -46,7 +46,7 @@ public partial class ServiceSignalR
 
         connection.On<List<Chat>>("onChats", OnChats);
 
-        connection.On<Chat, Message>("onCreateChat", OnCreateChat);
+        connection.On<Chat>("onCreateChat", OnCreateChat);
 
 
         // Пользователи

@@ -25,25 +25,4 @@ public partial class DialogPage : UserControl
             }
         };
     }
-    private void MenuItemCopyMessage_Click(object sender, RoutedEventArgs e) 
-    {
-        if (sender is not MenuItem menuItem || menuItem.DataContext is not Message message || message.Content is not string content)
-            return;
-
-        Clipboard.SetText(content);
-    }
-
-    private void MenuItemRemoveMessage_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is not MenuItem menuItem)
-            return;
-
-        if (menuItem.DataContext is not Message message)
-            return;
-
-        if (App.Current.Windows.OfType<MainWindow>().FirstOrDefault()?.DataContext is not NavigationService dataContext)
-            return;
-
-        (dataContext.CurrentViewModel as ChatsViewModel)?.RemoveMessageCommand.Execute(message);
-    }
 }

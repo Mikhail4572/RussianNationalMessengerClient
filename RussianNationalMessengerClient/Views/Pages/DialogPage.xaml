@@ -29,20 +29,18 @@
         <ListView Grid.Row="1" HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource TransparentListViewItemStyle}"
                   x:Name="LvMessages" ItemsSource="{Binding Messages}" SelectedItem="{Binding SelectedMessage}"
                   ScrollViewer.CanContentScroll="False">
-           
+            
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Удалить" Command="{Binding RemoveMessageCommand}"/>
+                    <MenuItem Header="Копировать" Command="{Binding CopyChatCommand}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border HorizontalAlignment="Left" BorderThickness="1" Padding="3" Margin="10 5 0 0"
                             CornerRadius="8" BorderBrush="#F1F1F1" Background="#effdde">
-                        <Border.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Удалить" Click="MenuItemRemoveMessage_Click"/>
-                                <MenuItem Header="Копировать" Command="{Binding DataContext.CopyChatCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                <!--<MenuItem Header="Копировать" Click="MenuItemCopyMessage_Click"/>-->
-                                <!--<MenuItem Header="Копировать" Command="{Binding DataContext.CopyChatCommand, 
-                                    RelativeSource={RelativeSource AncestorType=ListView}}"/>-->
-                            </ContextMenu>
-                        </Border.ContextMenu>
                         <Grid HorizontalAlignment="Center" RowDefinitions="auto, auto, *, auto" MaxWidth="400">
                             <ListBox ItemsSource="{Binding Attachments}">
                                 <ListBox.ItemTemplate>

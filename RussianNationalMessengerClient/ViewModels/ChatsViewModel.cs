@@ -150,7 +150,6 @@ public class ChatsViewModel : ViewModelBase
 
     });
 
-
     public ICommand DeleteChatCommand => new RelayCommand(async _ =>
     {
         if (SelectedChat is not null)
@@ -163,15 +162,6 @@ public class ChatsViewModel : ViewModelBase
         }
     });
 
-    public ICommand RemoveMessageCommand => new RelayCommand(async p =>
-    {
-        if (p is not Message message)
-            return;
-
-        await _signalR.DeleteMessageAsync(message.MessageId, message.ChatId);
-    });
-
     private async Task LoadMessagesAsync(ChatViewModel chat) =>
         await _signalR.GetMessagesAsync(chat.Chat.Id);
-
 }

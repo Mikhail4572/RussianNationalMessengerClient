@@ -109,13 +109,23 @@ public class ChatViewModel : ViewModelBase
 
     public ICommand CopyChatCommand => new RelayCommand(_ =>
     {
-        if(!string.IsNullOrEmpty(Content.Trim()))
-            Clipboard.SetText(Content);
+        if (SelectedMessage is not null and not { Content: "" or null })
+            Clipboard.SetText(SelectedMessage.Content);
+    });
+
+    public ICommand RemoveMessageCommand => new RelayCommand(async _ =>
+    {
+        //throw new NotImplementedException();
+        if (SelectedMessage is not null)
+        {
+            var isComplete = await _client.DeleteMessage(SelectedMessage.MessageId);
+            Console.WriteLine();
+        }
     });
 
     public ICommand SendMessageCommand => new RelayCommand(async _ =>
     {
-        if (string.IsNullOrWhiteSpace(Content.Trim()) && LoadAttachments.Count == 0)
+        if (string.IsNullOrWhiteSpace(Content?.Trim()) && LoadAttachments.Count == 0)
             return;
 
         Message addMessage = new()
@@ -131,11 +141,12 @@ public class ChatViewModel : ViewModelBase
 
         Messages.Add(addMessage);
 
-        var result = await _client.SendMessage(Chat.Id, Content, LoadAttachments);
+        var result = await _client.SendMessage(Chat.Id, Content, LoadAttachments.Select(x => x.FullPath));
 
         if (result.problem is not null)
         {
             MessageBox.Show($"Ошибка - {result.problem.Title}");
+            Messages.Remove(addMessage);
             addMessage.IsSend = false;
             return;
         }
@@ -152,7 +163,10 @@ public class ChatViewModel : ViewModelBase
         if (index != -1)
         {
             result.returnMessage.UILoadAttachments = addMessage.UILoadAttachments;
-            Messages[index] = result.returnMessage;
+            
+            Messages.Remove(addMessage);
+
+            Messages.Insert(index, result.returnMessage);
         }
         
         LoadAttachments.Clear();
@@ -185,7 +199,7 @@ public class ChatViewModel : ViewModelBase
                 LoadAttachments.Add(new()
                 {
                     FullPath = item,
-                    ImageSource = imageEx.Contains(Path.GetExtension(item)) ? ConvertImage.GetImageSourceFromPath(item) : null,
+                    ImageSource = imageEx.Contains(Path.GetExtension(item.ToLower())) ? ConvertImage.GetImageSourceFromPath(item) : null,
                     Stream = new FileStream(item, FileMode.Open, FileAccess.Read, FileShare.Read)
                 });
             }

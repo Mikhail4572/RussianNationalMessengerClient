@@ -61,12 +61,6 @@ public partial class ServiceSignalR
         chat.Update(chat.Chat);
     }
 
-    //public async Task SendMessage(Message message) =>
-    //    await Connection.SendAsync("SendMessage", message);
-
-    public async Task DeleteMessageAsync(string messageId, string chatId) =>
-        await Connection.SendAsync("RemoveMessage", messageId, chatId);
-
     public async Task GetMessagesAsync(string chatId)
     {
         List<Message> messages = await Connection.InvokeAsync<List<Message>>("GetMessages", chatId);

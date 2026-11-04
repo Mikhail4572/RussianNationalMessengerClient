@@ -19,6 +19,7 @@ public partial class ServiceSignalR
             _messengerState.LoadChats(chats);
         });
     }
+
     public async Task OnDeleteChat(string chatId)
     {
         App.Current.Dispatcher.Invoke(() =>
