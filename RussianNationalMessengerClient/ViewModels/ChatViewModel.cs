@@ -139,35 +139,36 @@ public class ChatViewModel : ViewModelBase
             UILoadAttachments = LoadAttachments.ToList()
         };
 
-        Messages.Add(addMessage);
+       // Messages.Add(addMessage);
 
-        var result = await _client.SendMessage(Chat.Id, Content, LoadAttachments.Select(x => x.FullPath));
+        //var result = 
+        await _client.SendMessage(Chat.Id, Content, LoadAttachments.Select(x => x.FullPath));
 
-        if (result.problem is not null)
-        {
-            MessageBox.Show($"Ошибка - {result.problem.Title}");
-            Messages.Remove(addMessage);
-            addMessage.IsSend = false;
-            return;
-        }
+        //if (result.problem is not null)
+        //{
+        //    MessageBox.Show($"Ошибка - {result.problem.Title}");
+        //    Messages.Remove(addMessage);
+        //    addMessage.IsSend = false;
+        //    return;
+        //}
 
-        if(result.returnMessage is null)
-        {
-            MessageBox.Show($"Неизвестная ошибка");
-            Messages.Remove(addMessage);
-            return;
-        }
+        //if(result.returnMessage is null)
+        //{
+        //    MessageBox.Show($"Неизвестная ошибка");
+        //    Messages.Remove(addMessage);
+        //    return;
+        //}
 
-        var index = Messages.IndexOf(addMessage);
+        //var index = Messages.IndexOf(addMessage);
 
-        if (index != -1)
-        {
-            result.returnMessage.UILoadAttachments = addMessage.UILoadAttachments;
+        //if (index != -1)
+        //{
+        //    result.returnMessage.UILoadAttachments = addMessage.UILoadAttachments;
             
-            Messages.Remove(addMessage);
+        //    Messages.Remove(addMessage);
 
-            Messages.Insert(index, result.returnMessage);
-        }
+        //    Messages.Insert(index, result.returnMessage);
+        //}
         
         LoadAttachments.Clear();
         Content ??= null;

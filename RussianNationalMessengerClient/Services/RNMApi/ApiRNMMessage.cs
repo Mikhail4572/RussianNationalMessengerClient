@@ -15,12 +15,14 @@ public partial class ApiRNM
     public async Task<bool> DeleteMessage(string messageId) =>
          (await _httpClient.PostAsJsonAsync("Message/delete", messageId)).IsSuccessStatusCode;
 
-    public async Task<(Message? returnMessage, ProblemDetails? problem)> SendMessage(string chatId, string text, IEnumerable<string> paths = null)
+    public async Task<(Message? returnMessage, ProblemDetails? problem)> SendMessage(string chatId, string? text, IEnumerable<string> paths = null)
     {
         using MultipartFormDataContent content = new();
 
         content.Add(new StringContent(chatId), "ChatId");
-        content.Add(new StringContent(text ?? string.Empty), "Content");      
+        content.Add(new StringContent(text ?? string.Empty), "Content");
+
+        FileExtensionContentTypeProvider provider = new();
 
         foreach (var item in paths)
         {
@@ -30,8 +32,6 @@ public partial class ApiRNM
             var fileStream = File.OpenRead(item);
 
             StreamContent fileContent = new(fileStream);
-
-            FileExtensionContentTypeProvider provider = new();
 
             if (!provider.TryGetContentType(item, out string? contentType))
                 contentType = "application/octet-stream";
