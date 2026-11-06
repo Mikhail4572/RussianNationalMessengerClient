@@ -46,8 +46,10 @@ public class ChatsViewModel : ViewModelBase
 
     public ICommand OnSelectionChangedAccount => new RelayCommand(async _ =>
     {
+        if (SelectedAccount is null)
+            return;
 
-        if (SelectedAccount is not null && _messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Count == 2 && x.Chat.Members.Contains(SelectedAccount.Username))
+        if (_messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Count == 2 && x.Chat.Members.Contains(SelectedAccount.Username))
                is ChatViewModel chatVM)
         {
             SearchUserContent = null;
@@ -55,17 +57,18 @@ public class ChatsViewModel : ViewModelBase
             return;
         }
 
-        if (SelectedAccount is null)
-            return;
-
-        SearchUserContent = null;
-
         ChatViewModelFactory cvmf = new(_authState, _client);
 
         var chat = await _signalR.CreateChatAsync(null, [SelectedAccount.Username, _authState.CurrentUser.Username]);
 
-        var chat_vm = cvmf.Create(chat);
-        SelectedChat = chat_vm;
+        if (chat is null)
+            return;
+
+        _messengerState.LoadChats([chat]);
+
+        SearchUserContent = null;
+
+        SelectedChat = _messengerState.GetChat(chat.Id);
     });
 
     public ChatViewModel? SelectedChat
@@ -98,6 +101,7 @@ public class ChatsViewModel : ViewModelBase
         _authState = authState;
         _messengerState = messengerState;
         _signalR = signalR;
+        _client = client;
 
         SearchUsers.CollectionChanged += (s, e) =>
         {

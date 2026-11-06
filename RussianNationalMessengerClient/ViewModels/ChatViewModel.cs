@@ -21,6 +21,16 @@ public class ChatViewModel : ViewModelBase
 
     public ObservableCollection<UILoadAttachment> LoadAttachments { get; set; } = [];
 
+    public bool IsSendButtonEnabled
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(IsSendButtonEnabled));
+        }
+    } = true;
+
     public Message? SelectedMessage
     {
         get;
@@ -128,6 +138,7 @@ public class ChatViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(Content?.Trim()) && LoadAttachments.Count == 0)
             return;
 
+        /*
         Message addMessage = new()
         {
             MessageId = "1",
@@ -139,10 +150,14 @@ public class ChatViewModel : ViewModelBase
             UILoadAttachments = LoadAttachments.ToList()
         };
 
-       // Messages.Add(addMessage);
+        Messages.Add(addMessage);
+        */
 
-        //var result = 
-        await _client.SendMessage(Chat.Id, Content, LoadAttachments.Select(x => x.FullPath));
+        IsSendButtonEnabled = false;
+
+        var result = await _client.SendMessage(Chat.Id, Content, LoadAttachments.Select(x=>x.FullPath));
+
+        IsSendButtonEnabled = true;
 
         //if (result.problem is not null)
         //{
@@ -171,7 +186,7 @@ public class ChatViewModel : ViewModelBase
         //}
         
         LoadAttachments.Clear();
-        Content ??= null;
+        Content = null;
     });
 
     public ICommand AddAttachment => new RelayCommand(async _ =>

@@ -47,9 +47,7 @@
                                     <DataTemplate DataType="{x:Type models:Attachment}">
                                         <!--написать отображение полученных вложений-->
                                         <Grid>
-                                            <Border>
-                                                <Label Content="{Binding GetExtension}"/>
-                                            </Border>
+                                            <Label Content="{Binding GetExtension}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
@@ -120,7 +118,8 @@
 
             </TextBox>
 
-            <Button Content="Отправить" Command="{Binding SendMessageCommand}" VerticalAlignment="Bottom"
+            <Button Content="Отправить" Command="{Binding SendMessageCommand}"
+                    VerticalAlignment="Bottom" IsEnabled="{Binding IsSendButtonEnabled}"
                     Grid.Column="2" Padding="7"/>
         </Grid>
     </Grid>

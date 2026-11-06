@@ -19,7 +19,7 @@ public class ViewAttachmentConverter : IValueConverter
             {
                 Source = attachment.ImageSource,
                 Stretch = Stretch.Uniform,
-                MaxHeight = 60
+                MaxHeight = 150
             };
 
             return image;

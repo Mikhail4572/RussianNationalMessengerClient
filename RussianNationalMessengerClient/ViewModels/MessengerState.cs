@@ -47,7 +47,7 @@ public class MessengerState : ViewModelBase
 
     public ChatViewModel? GetChat(string chatId)
     {
-        _chatCache.TryGetValue(chatId, out ChatViewModel? chat);
+        _chatCache.TryGetValue(chatId, out var chat);
         return chat;
     }
 
