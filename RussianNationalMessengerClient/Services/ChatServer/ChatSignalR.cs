@@ -1,11 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using RussianNationalMessengerClient.Dtos;
-using RussianNationalMessengerClient.Models;
-using RussianNationalMessengerClient.ViewModels;
-using RussianNationalMessengerClient.Views.Windows;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
+﻿using RussianNationalMessengerClient.Models;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace RussianNationalMessengerClient.Services.ChatServer;
 

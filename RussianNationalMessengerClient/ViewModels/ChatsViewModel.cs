@@ -57,8 +57,6 @@ public class ChatsViewModel : ViewModelBase
             return;
         }
 
-        ChatViewModelFactory cvmf = new(_authState, _client);
-
         var chat = await _signalR.CreateChatAsync(null, [SelectedAccount.Username, _authState.CurrentUser.Username]);
 
         if (chat is null)

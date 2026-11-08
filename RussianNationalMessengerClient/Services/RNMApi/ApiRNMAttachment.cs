@@ -15,15 +15,9 @@ namespace RussianNationalMessengerClient.Services.RNMApi;
 
 public partial class ApiRNM
 {
-    public async Task<UIMessageAttachment?> DownloadFile(string messageId, string attachmentId)
+    public async Task<byte[]?> DownloadFile(string messageId, string attachmentId)
     {
-        var dto = new
-        {
-            MessageId = messageId,
-            AttachmentId = attachmentId
-        };
-
-        var response = await _httpClient.PostAsJsonAsync("File/getfile", dto);
+        var response = await _httpClient.GetAsync($"File/getfile/{messageId}/{attachmentId}");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -33,29 +27,7 @@ public partial class ApiRNM
             return null;
         }
 
-        var stream = await response.Content.ReadAsStreamAsync();
 
-        string? contentType = response.Content.Headers.ContentType?.ToString();
-
-        string? fileName = response.Content.Headers.ContentDisposition?.FileNameStar
-            ?? response.Content.Headers.ContentDisposition?.FileName;
-
-        fileName = fileName?.Trim('"');
-
-        ImageSource? imageSource = null;
-
-        if (contentType is not null)
-            imageSource = ConvertImage.SupportedImageTypes.Contains(contentType.ToLower()) ? ConvertImage.ConvertStreamToImageSource(stream) : null;
-
-        UIMessageAttachment model = new()
-        {
-            Id = attachmentId,
-            Stream = stream,
-            FileName = fileName,
-            ContentType = contentType,
-            ImageSource = imageSource
-        };
-
-        return model;
+        return await response.Content.ReadAsByteArrayAsync();
     }
 }

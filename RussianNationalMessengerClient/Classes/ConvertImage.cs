@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Media;
@@ -9,7 +11,7 @@ namespace RussianNationalMessengerClient.Classes;
 
 public static class ConvertImage
 {
-    public static readonly IReadOnlyList<string> SupportedImageTypes = 
+    public static readonly IReadOnlyList<string> SupportedImageTypes =
     [   
        // "image/jpg",
         "image/jpeg",
@@ -21,7 +23,29 @@ public static class ConvertImage
         "image/x-icon"
     ];
 
-    public static ImageSource GetImageSourceFromPath(string path)
+    public static BitmapImage? ConvertBytesToBitmapImage(byte[]? bytes)
+    {
+        try
+        {
+            BitmapImage bitmap = new();
+
+            using MemoryStream stream = new(bytes);
+
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.StreamSource = stream;
+            bitmap.EndInit();
+            bitmap.Freeze();
+
+            return bitmap;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public static BitmapImage GetImageSourceFromPath(string path)
     {
         try
         {
@@ -39,7 +63,36 @@ public static class ConvertImage
         }
     }
 
-    public static ImageSource? ConvertStreamToImageSource(Stream stream)
+    public static byte[]? BitmapImageToBytes(BitmapImage image, string? extension = null)
+    {
+
+        extension = extension?.ToLower();
+        try
+        {
+            BitmapEncoder encoder = extension switch
+            {
+                ".png" => new PngBitmapEncoder(),
+                ".jpg" or ".jpeg" => new JpegBitmapEncoder() { QualityLevel = 90 },
+                ".bmp" => new BmpBitmapEncoder(),
+                ".gif" => new GifBitmapEncoder(),
+                ".tif" or ".tiff" => new TiffBitmapEncoder(),
+                ".wmp" => new WmpBitmapEncoder(),
+                _ => new PngBitmapEncoder()
+            };
+
+            encoder.Frames.Add(BitmapFrame.Create(image));
+
+            using var ms = new MemoryStream();
+            encoder.Save(ms);
+            return ms.ToArray();
+        }
+        catch
+        {
+            return null; 
+        }
+    }
+
+    public static BitmapImage? ConvertStreamToBitmapImage(Stream stream)
     {
         try
         {

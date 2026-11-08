@@ -6,6 +6,7 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Pages"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:helpers="clr-namespace:RussianNationalMessengerClient.Helpers"
     xmlns:converters="clr-namespace:RussianNationalMessengerClient.Converters"
     mc:Ignorable="d" Background="White"
@@ -20,19 +21,22 @@
             <Grid RowDefinitions="auto, *">
                 <Grid ColumnDefinitions="auto, *" Margin="5">
                     <Button HorizontalAlignment="Left" Margin="0 0 5 0" Content="Меню" />
-                    <TextBox Grid.Column="1" Grid.ColumnSpan="2" helpers:FocusHelper.IsFocused="{Binding IsFocusedTbSearch, Mode=TwoWay}"
-                             Text="{Binding SearchUserContent, UpdateSourceTrigger=PropertyChanged}">
+
+                    <ui:AutoSuggestBox PlaceholderText="Search..." Grid.Column="1" Grid.ColumnSpan="2" 
+                                       IsSuggestionListOpen="False"
+                                       helpers:FocusHelper.IsFocused="{Binding IsFocusedTbSearch, Mode=TwoWay}"
+                             Text="{Binding SearchUserContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="TextChanged">
                                 <i:InvokeCommandAction Command="{Binding SearchUserCommand}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </ui:AutoSuggestBox>
                 </Grid>
-                
+
                 <ListView Grid.Row="1" ItemsSource="{Binding Chats}" HorizontalContentAlignment="Stretch" 
                           SelectedItem="{Binding SelectedChat}" Visibility="{Binding VisibilityChatsLV}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0">
 
                     <ListView.ContextMenu>
                         <ContextMenu>
@@ -55,7 +59,7 @@
                 </ListView>
 
                 <ListView Grid.Row="1" ItemsSource="{Binding SearchUsers}" SelectedItem="{Binding SelectedAccount}"
-                          Visibility="{Binding IsFocusedTbSearch, Converter={StaticResource BoolToVisCon}}">
+                          Visibility="{Binding IsFocusedTbSearch, Converter={StaticResource BoolToVisCon}}" BorderThickness="0">
 
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">
@@ -72,7 +76,7 @@
             </Grid>
         </Border>
         
-        <ContentControl Grid.Column="1"
+        <ContentControl Grid.Column="1" BorderThickness="0"
             Content="{Binding SelectedChat}"/>
     </Grid>
 </UserControl>

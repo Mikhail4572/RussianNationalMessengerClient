@@ -17,41 +17,49 @@ public partial class ApiRNM
 
     public async Task<(Message? returnMessage, ProblemDetails? problem)> SendMessage(string chatId, string? text, IEnumerable<string> paths = null)
     {
-        using MultipartFormDataContent content = new();
-
-        content.Add(new StringContent(chatId), "ChatId");
-        content.Add(new StringContent(text ?? string.Empty), "Content");
-
-        FileExtensionContentTypeProvider provider = new();
-
-        foreach (var item in paths)
+        try
         {
-            if (!File.Exists(item))
-                continue;
+            using MultipartFormDataContent content = new();
 
-            var fileStream = File.OpenRead(item);
+            content.Add(new StringContent(chatId), "ChatId");
+            content.Add(new StringContent(text ?? string.Empty), "Content");
 
-            StreamContent fileContent = new(fileStream);
+            FileExtensionContentTypeProvider provider = new();
 
-            if (!provider.TryGetContentType(item, out string? contentType))
-                contentType = "application/octet-stream";
+            foreach (var item in paths)
+            {
+                if (!File.Exists(item))
+                    continue;
 
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+                var fileStream = File.OpenRead(item);
 
-            content.Add(fileContent, "Files", Path.GetFileName(item));
+                StreamContent fileContent = new(fileStream);
+
+                if (!provider.TryGetContentType(item, out string? contentType))
+                    contentType = "application/octet-stream";
+
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+                content.Add(fileContent, "Files", Path.GetFileName(item));
+            }
+
+            var response = await _httpClient.PostAsync("Message/send", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return (null, await response.Content.ReadFromJsonAsync<ProblemDetails>());
+            }
+
+            Message? returnMessage = await response.Content.ReadFromJsonAsync<Message>();
+
+            return (returnMessage, null);
+
+
         }
-
-        var response = await _httpClient.PostAsync("Message/send", content);
-
-        if (!response.IsSuccessStatusCode)
+        catch (Exception ex)
         {
-            return (null, await response.Content.ReadFromJsonAsync<ProblemDetails>());
+            MessageBox.Show(ex.Message);
+            return (null, null);
         }
-
-        Message? returnMessage = await response.Content.ReadFromJsonAsync<Message>();
-
-        return (returnMessage, null);
-
-
     }
 }

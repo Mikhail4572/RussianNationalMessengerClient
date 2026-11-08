@@ -7,6 +7,9 @@
       xmlns:vm="clr-namespace:RussianNationalMessengerClient.ViewModels"
       xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
       xmlns:models="clr-namespace:RussianNationalMessengerClient.Models"
+      xmlns:uimodels="clr-namespace:RussianNationalMessengerClient.Models.UIModels"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:converters="clr-namespace:RussianNationalMessengerClient.Converters"
       xmlns:views="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       mc:Ignorable="d"
@@ -16,20 +19,18 @@
     </UserControl.Resources>
 
     <Grid Background="#f1f1f1" RowDefinitions="auto, *, auto, auto">
-        <Grid ColumnDefinitions="auto, *">
-            <Grid RowDefinitions="*, auto">
-                <!--Имя собеседника-->
-                <Label Content="{Binding DisplayName}" FontSize="15"/>
-                <!--Онлайн ли?-->
-                <Label Content="тест" Grid.Row="1" HorizontalContentAlignment="Right"/>
-            </Grid>
+        <Grid RowDefinitions="*, auto" Margin="5 5 0 0">
+            <!--Имя собеседника или название группы-->
+            <Label Content="{Binding DisplayName}" Foreground="#000" FontSize="15"/>
+            <!--Онлайн ли?-->
+            <Label Content="тест" Grid.Row="1" Foreground="#000"/>
         </Grid>
-        
+
         <!--Чат-->
         <ListView Grid.Row="1" HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource TransparentListViewItemStyle}"
-                  x:Name="LvMessages" ItemsSource="{Binding Messages}" SelectedItem="{Binding SelectedMessage}"
-                  ScrollViewer.CanContentScroll="False">
-            
+                  x:Name="LvMessages" ItemsSource="{Binding Messages}" Style="{StaticResource LvNoneErrorTemplate}" ScrollViewer.CanContentScroll="False"
+                  SelectedItem="{Binding SelectedMessage}" BorderThickness="0.5 0 0 0">
+
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Удалить" Command="{Binding RemoveMessageCommand}"/>
@@ -38,22 +39,22 @@
             </ListView.ContextMenu>
             
             <ListView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate DataType="{x:Type uimodels:UIMessage}">
                     <Border HorizontalAlignment="Left" BorderThickness="1" Padding="3" Margin="10 5 0 0"
-                            CornerRadius="8" BorderBrush="#F1F1F1" Background="#effdde">
+                            CornerRadius="8" BorderBrush="#F1F1F1" Background="#d2e3fc">
                         <Grid HorizontalAlignment="Center" RowDefinitions="auto, auto, *, auto" MaxWidth="400">
-                            <ListBox ItemsSource="{Binding Attachments}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type models:Attachment}">
-                                        <!--написать отображение полученных вложений-->
-                                        <Grid>
-                                            <Label Content="{Binding GetExtension}"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                            
+                            <TextBlock Foreground="Gray" Text="{Binding Author}" FontSize="12"/>
 
-                            <TextBlock Grid.Row="1" Foreground="Gray" Text="{Binding Author}" FontSize="12"/>
+                            <ItemsControl  Grid.Row="1" ItemsSource="{Binding Attachments}" 
+                                           BorderThickness="0" ItemTemplate="{StaticResource LvAttachmentsTemplate}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="TextChanged">
+                                        <i:InvokeCommandAction Command="{Binding SearchUserCommand}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ItemsControl>
+
                             <TextBox TextWrapping="Wrap"
                                      IsReadOnly="True"
                                      Text="{Binding Content}"
@@ -75,52 +76,42 @@
         </ListView>
 
         <!--Вложения-->
-        <ListBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                 ItemsSource="{Binding LoadAttachments}" Margin="0 10">
-            <ListBox.ItemsPanel>
+        <ListView Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="Transparent" BorderThickness="0"
+                 ItemsSource="{Binding LoadAttachments}" Margin="0 10" ItemContainerStyle="{StaticResource TransparentListViewItemStyle}">
+            <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border Height="50" Width="50" CornerRadius="8" BorderBrush="gray" Margin="0 0 5 0" BorderThickness="0.1">
                         <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                Content="{Binding ., Converter={StaticResource viewAttachmentConverter}}"/>
                     </Border>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ListView.ItemTemplate>
+        </ListView>
         
         <Grid Grid.Row="3" ColumnDefinitions="auto, *, auto" Margin=" 0 5 5 5">
+            <ui:Button Command="{Binding AddAttachment}" Icon="{ui:SymbolIcon Attach12}" FontSize="16" BorderThickness="0" Background="Transparent"/>
 
-            <Button Command="{Binding AddAttachment}">
-                <Button.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                </Button.Resources>                
-                <Button.Content>
-                    <svgc:SvgViewbox Source="/Icons/attachFile.svg" 
-                        Height="20" Width="20" Stretch="Uniform"/>
-                </Button.Content>
-            </Button>
-            
-            <TextBox Text="{Binding Content}" Grid.Column="1" VerticalAlignment="Center"
-                     FontSize="15" Padding="2" Margin="0 0 15 0" MaxHeight="100">
-
+            <TextBox Text="{Binding Content}" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap"
+                     FontSize="16" Padding="5" Margin="0 0 15 0" MaxHeight="100">
+                
                 <TextBox.InputBindings>
-                    <KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding PasteContentCommand}" />
                     <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
                 </TextBox.InputBindings>
 
             </TextBox>
 
-            <Button Content="Отправить" Command="{Binding SendMessageCommand}"
+            <!--<Button Content="Отправить" Command="{Binding SendMessageCommand}"
                     VerticalAlignment="Bottom" IsEnabled="{Binding IsSendButtonEnabled}"
-                    Grid.Column="2" Padding="7"/>
+                    Grid.Column="2" Padding="7"/>-->
+
+            <ui:Button Command="{Binding SendMessageCommand}" Icon="{ui:SymbolIcon Send24}"
+                    VerticalAlignment="Bottom" IsEnabled="{Binding IsSendButtonEnabled}"
+                    Grid.Column="2" Padding="10" FontSize="14"/>
         </Grid>
     </Grid>
 </UserControl>

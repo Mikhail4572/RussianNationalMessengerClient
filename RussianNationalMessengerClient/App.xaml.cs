@@ -3,6 +3,7 @@ using RussianNationalMessengerClient.Classes;
 using RussianNationalMessengerClient.Services;
 using RussianNationalMessengerClient.Services.ChatServer;
 using RussianNationalMessengerClient.Services.RNMApi;
+using RussianNationalMessengerClient.Services.WindowServices;
 using RussianNationalMessengerClient.ViewModels;
 using RussianNationalMessengerClient.Views.Windows;
 using System.Windows;
@@ -49,6 +50,8 @@ public partial class App : Application
         services.AddSingleton<ChatViewModelFactory>();
 
         services.AddSingleton<MainWindow>();
+
+      //  services.AddSingleton<IWindowService, WindowService>();
 
         // Transient
 

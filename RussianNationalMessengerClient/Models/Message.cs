@@ -28,9 +28,6 @@ public class Message : ViewModelBase
     [JsonPropertyName("attachments")]
     public List<Attachment>? Attachments { get; set; }
 
-    [JsonIgnore]
-    public List<UILoadAttachment> UILoadAttachments { get; set; }
-
     [JsonIgnore]    
     public bool? IsSend 
     {

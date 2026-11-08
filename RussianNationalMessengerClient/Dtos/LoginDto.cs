@@ -7,8 +7,8 @@ namespace RussianNationalMessengerClient.Dtos;
 public class LoginDto
 {
     [JsonPropertyName("username")]
-    public string UserName { get; set; } = "mikhail";
+    public string UserName { get; set; }
 
     [JsonPropertyName("password")]
-    public string Password { get; set; } = "1111";
+    public string Password { get; set; }
 }

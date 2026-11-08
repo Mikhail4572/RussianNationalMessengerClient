@@ -9,25 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Icons\attachFile.svg" />
-    <None Remove="Icons\closeIcon.svg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Icons\attachFile.svg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\closeIcon.svg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.13" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.3.13" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
     <PackageReference Include="SharpVectors" Version="1.8.5" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

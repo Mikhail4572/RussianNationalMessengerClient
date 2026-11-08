@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using RussianNationalMessengerClient.Dtos;
 using RussianNationalMessengerClient.Models;
+using RussianNationalMessengerClient.Classes;
+using RussianNationalMessengerClient.Models.UIModels;
 using RussianNationalMessengerClient.ViewModels;
 
 namespace RussianNationalMessengerClient.Services.ChatServer;
@@ -26,7 +28,23 @@ public partial class ServiceSignalR
 
             chat.Update(chat.Chat);
 
-            chat.Messages.Add(msg);
+            chat.Messages.Add(new()
+            {
+                MessageId = msg.MessageId,
+                Content = msg.Content,
+                Author = msg.Author,
+                ChatId = msg.ChatId,
+                SentAt = msg.SentAt,
+                Attachments = msg.Attachments?.Select(x => new UIMessageAttachment
+                {
+                    Id = x.Id,
+                    ContentType = x.ContentType,
+                    FileName = x.FileName,
+                    Preview = null,
+                    Size = x.Size,
+                    MessageId = msg.MessageId
+                }).OrderBy(x => x.ContentType).ToList()
+            });
         });
     }
 

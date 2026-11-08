@@ -10,19 +10,19 @@ using System.Windows.Input;
 namespace RussianNationalMessengerClient.ViewModels;
 
 public class AuthViewModel : ViewModelBase
-{ 
+{
     public ICommand LoginCommand => new RelayCommand(async _ =>
     {
         IProgress<int> progress = new Progress<int>(value => Value = value);
 
         try
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(Login.UserName, nameof(Login.UserName));
-            ArgumentException.ThrowIfNullOrWhiteSpace(Login.Password, nameof(Login.Password));
+            ArgumentException.ThrowIfNullOrWhiteSpace(UserName, nameof(UserName));
+            ArgumentException.ThrowIfNullOrWhiteSpace(Password, nameof(Password));
 
-            var loginResult = await _client.Login(Login.UserName, Login.Password);
+            var loginResult = await _client.Login(UserName, Password);
 
-            if(loginResult.loginResponseDto is null)
+            if (loginResult.loginResponseDto is null)
             {
                 ErrorMessage = loginResult.problem is null ? "Ошибка, попробуйте позже("
                     : "Title: " + loginResult.problem.Title;
@@ -62,7 +62,27 @@ public class AuthViewModel : ViewModelBase
             Value = 0;
         }
     },
-        _ => !string.IsNullOrWhiteSpace(Login.UserName) && !string.IsNullOrWhiteSpace(Login.Password));
+        _ => !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password));
+
+    public string UserName
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(UserName));
+        }
+    } = "mikhail";
+
+    public string Password
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged(nameof(Password));
+        }
+    } = "1111";
 
     public int Value
     {
@@ -84,23 +104,12 @@ public class AuthViewModel : ViewModelBase
         }
     }
 
-    public LoginDto Login
-    {
-        get => field;
-        set
-        {
-            field = value;
-            OnPropertyChanged(nameof(Login));
-        }
-    } = new();
-
     private readonly AuthState _authState;
     private readonly ServiceSignalR _service;
     private readonly NavigationService _navigation;
     private readonly ApiRNM _client;
 
-    public AuthViewModel(
-        ServiceSignalR service, NavigationService navigation, 
+    public AuthViewModel(ServiceSignalR service, NavigationService navigation,
         AuthState authState, ApiRNM client)
     {
         _client = client;
