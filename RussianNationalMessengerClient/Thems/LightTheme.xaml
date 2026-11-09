@@ -14,7 +14,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+            
     <DataTemplate x:Key="LvAttachmentsTemplate" DataType="{x:Type uimodels:UIMessageAttachment}">
         <Border BorderBrush="#D0D0D0"
                     BorderThickness="1"
@@ -89,4 +89,5 @@
 
         </Style.Triggers>
     </Style>
+
 </ResourceDictionary>

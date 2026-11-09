@@ -1,10 +1,12 @@
 ﻿using Microsoft.Win32;
-using System.Collections.Specialized;
 using RussianNationalMessengerClient.Classes;
 using RussianNationalMessengerClient.Models;
 using RussianNationalMessengerClient.Models.UIModels;
 using RussianNationalMessengerClient.Services.RNMApi;
+using RussianNationalMessengerClient.Services.WindowServices;
+using RussianNationalMessengerClient.Views.Windows;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -16,6 +18,7 @@ public class ChatViewModel : ViewModelBase
 {
     private readonly AuthState _authState;
     private readonly ApiRNM _client;
+    private readonly IWindowService _windowService;
 
     public Chat Chat { get; }
 
@@ -33,7 +36,7 @@ public class ChatViewModel : ViewModelBase
         }
     } = true;
 
-    public Message? SelectedMessage
+    public UIMessage? SelectedMessage
     {
         get;
         set
@@ -132,40 +135,30 @@ public class ChatViewModel : ViewModelBase
         }
     }
 
+    public ICommand PasteImageCommand => new RelayCommand(_ =>
+    {
+        //if (Clipboard.ContainsImage())
+        //{
+        //    var image = Clipboard.GetImage();
+        //    LoadAttachments.Add(new() 
+        //    {
+        //        FullPath = 
+        //    })
+        //}
+    });
+
     public ICommand CopyChatCommand => new RelayCommand(_ =>
     {
         if (SelectedMessage is not null and not { Content: "" or null })
             Clipboard.SetText(SelectedMessage.Content);
     });
 
-    public ICommand DownloadCommand => new RelayCommand(async p =>
+    public ICommand OpenAttachmentWindowCommand => new RelayCommand(async p =>
     {
-        if (p is not UIMessageAttachment attachment)
+        if (SelectedMessage is null || SelectedMessage.Attachments is null || SelectedMessage.Attachments.Count == 0) 
             return;
 
-        byte[]? bytes = null;
-
-        if (attachment.Preview is not null)
-        {
-            bytes = ConvertImage.BitmapImageToBytes(attachment.Preview);
-        }
-        else
-        {
-            bytes = await _client.DownloadFile(attachment.MessageId, attachment.Id);
-        }
-
-        if (bytes is not null && bytes.Length > 0) 
-        {
-            SaveFileDialog sfd = new()
-            {
-                FileName = attachment.FileName,
-                Filter = "Все файлы (*.*)|*.*"
-            };
-
-            if(sfd.ShowDialog() == true)
-                await File.WriteAllBytesAsync(sfd.FileName, bytes);
-
-        }
+        _windowService.ShowDialog<AttachmentWindow>(SelectedMessage.Attachments);
     });
 
     public ICommand RemoveMessageCommand => new RelayCommand(async _ =>
@@ -181,53 +174,12 @@ public class ChatViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(Content?.Trim()) && LoadAttachments.Count == 0)
             return;
-
-        /*
-        Message addMessage = new()
-        {
-            MessageId = "1",
-            Author = _authState.CurrentUser.Username,
-            ChatId = Chat.Id,
-            Content = Content,
-            IsSend = null,
-            SentAt = DateTime.UtcNow,
-            UILoadAttachments = LoadAttachments.ToList()
-        };
-
-        Messages.Add(addMessage);
-        */
-
+    
         IsSendButtonEnabled = false;
 
         var result = await _client.SendMessage(Chat.Id, Content, LoadAttachments.Select(x => x.FullPath));
 
         IsSendButtonEnabled = true;
-
-        //if (result.problem is not null)
-        //{
-        //    MessageBox.Show($"Ошибка - {result.problem.Title}");
-        //    Messages.Remove(addMessage);
-        //    addMessage.IsSend = false;
-        //    return;
-        //}
-
-        //if(result.returnMessage is null)
-        //{
-        //    MessageBox.Show($"Неизвестная ошибка");
-        //    Messages.Remove(addMessage);
-        //    return;
-        //}
-
-        //var index = Messages.IndexOf(addMessage);
-
-        //if (index != -1)
-        //{
-        //    result.returnMessage.UILoadAttachments = addMessage.UILoadAttachments;
-
-        //    Messages.Remove(addMessage);
-
-        //    Messages.Insert(index, result.returnMessage);
-        //}
 
         LoadAttachments.Clear();
         Content = null;
@@ -266,8 +218,9 @@ public class ChatViewModel : ViewModelBase
         }
     });
 
-    public ChatViewModel(Chat chat, AuthState authState, ApiRNM client)
+    public ChatViewModel(Chat chat, AuthState authState, ApiRNM client, IWindowService windowService)
     {
+        _windowService = windowService;
         Chat = chat;
         _authState = authState;
         _client = client;

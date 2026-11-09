@@ -77,7 +77,7 @@ public class ChatsViewModel : ViewModelBase
             _messengerState.SelectedChat = value;
             OnPropertyChanged(nameof(SelectedChat));
 
-            if (value is not null)
+            if (value is not null && value.Messages.Count == 0)
                 _ = LoadMessagesAsync(value);
         }
     }

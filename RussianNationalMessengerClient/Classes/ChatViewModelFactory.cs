@@ -1,11 +1,7 @@
-﻿using RussianNationalMessengerClient.Models;
-using RussianNationalMessengerClient.Services;
-using RussianNationalMessengerClient.Services.ChatServer;
+﻿using RussianNationalMessengerClient.Services.WindowServices;
 using RussianNationalMessengerClient.Services.RNMApi;
 using RussianNationalMessengerClient.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using RussianNationalMessengerClient.Models;
 
 namespace RussianNationalMessengerClient.Classes;
 
@@ -13,13 +9,15 @@ public class ChatViewModelFactory
 {
     private readonly AuthState _authState;
     private readonly ApiRNM _client;
-    private readonly ServiceSignalR _signalR;
+    private readonly IWindowService _windowService;
+    
 
-    public ChatViewModelFactory(AuthState authState, ApiRNM client)
+    public ChatViewModelFactory(AuthState authState, ApiRNM client, IWindowService windowService)
     {
+        _windowService = windowService;
         _authState = authState;
         _client = client;
     }
 
-    public ChatViewModel Create(Chat chat) => new(chat, _authState, _client);
+    public ChatViewModel Create(Chat chat) => new(chat, _authState, _client, _windowService);
 }

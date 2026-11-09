@@ -7,6 +7,6 @@ namespace RussianNationalMessengerClient.Services.WindowServices;
 
 public interface IWindowService
 {
-    void Show<TWindow>() where TWindow : Window;
-    bool? ShowDialog<TWindow>() where TWindow : Window;
+    void Show<TWindow>(object parameter) where TWindow : Window;
+    bool? ShowDialog<TWindow>(object parameter) where TWindow : Window;
 }

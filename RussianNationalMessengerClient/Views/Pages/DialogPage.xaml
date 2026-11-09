@@ -31,6 +31,12 @@
                   x:Name="LvMessages" ItemsSource="{Binding Messages}" Style="{StaticResource LvNoneErrorTemplate}" ScrollViewer.CanContentScroll="False"
                   SelectedItem="{Binding SelectedMessage}" BorderThickness="0.5 0 0 0">
 
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding OpenAttachmentWindowCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Удалить" Command="{Binding RemoveMessageCommand}"/>
@@ -46,13 +52,9 @@
                             
                             <TextBlock Foreground="Gray" Text="{Binding Author}" FontSize="12"/>
 
-                            <ItemsControl  Grid.Row="1" ItemsSource="{Binding Attachments}" 
+                            <ItemsControl  Grid.Row="1" ItemsSource="{Binding Attachments}"
                                            BorderThickness="0" ItemTemplate="{StaticResource LvAttachmentsTemplate}">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="TextChanged">
-                                        <i:InvokeCommandAction Command="{Binding SearchUserCommand}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                            
                             </ItemsControl>
 
                             <TextBox TextWrapping="Wrap"
@@ -101,6 +103,7 @@
                 
                 <TextBox.InputBindings>
                     <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
+                    <KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding PasteImageCommand}" />
                 </TextBox.InputBindings>
 
             </TextBox>

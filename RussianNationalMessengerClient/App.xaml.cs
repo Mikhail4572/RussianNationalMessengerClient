@@ -51,12 +51,15 @@ public partial class App : Application
 
         services.AddSingleton<MainWindow>();
 
-      //  services.AddSingleton<IWindowService, WindowService>();
+        services.AddSingleton<IWindowService, WindowService>();
 
         // Transient
 
         services.AddTransient<AuthViewModel>();
 
         services.AddTransient<ChatsViewModel>();
+
+        services.AddTransient<AttachmentWindowViewModel>();
+        services.AddTransient<AttachmentWindow>();
     }
 }

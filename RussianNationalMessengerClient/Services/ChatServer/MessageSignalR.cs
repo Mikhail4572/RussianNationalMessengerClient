@@ -83,14 +83,11 @@ public partial class ServiceSignalR
     {
         List<Message> messages = await Connection.InvokeAsync<List<Message>>("GetMessages", chatId);
 
-        App.Current.Dispatcher.Invoke(() =>
-        {
-            ChatViewModel? chat = _messengerState.GetChat(chatId);
+        ChatViewModel? chat = _messengerState.GetChat(chatId);
 
-            if (chat is null)
-                return;
+        if (chat is null)
+            return;
 
-            chat.LoadMessages(messages);
-        });
+        await chat.LoadMessages(messages);
     }
 }
