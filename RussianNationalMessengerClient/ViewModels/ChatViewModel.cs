@@ -137,14 +137,10 @@ public class ChatViewModel : ViewModelBase
 
     public ICommand PasteImageCommand => new RelayCommand(_ =>
     {
-        //if (Clipboard.ContainsImage())
-        //{
-        //    var image = Clipboard.GetImage();
-        //    LoadAttachments.Add(new() 
-        //    {
-        //        FullPath = 
-        //    })
-        //}
+        if (Clipboard.ContainsText())
+        {
+            Content += Clipboard.GetText();
+        }
     });
 
     public ICommand CopyChatCommand => new RelayCommand(_ =>

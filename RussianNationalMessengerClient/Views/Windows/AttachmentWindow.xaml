@@ -17,13 +17,18 @@
         <converters:BoolToVisibilityConverter x:Key="booltovisConverter"/>
         <converters:BoolToVisibilityReverseConverter x:Key="booltovisReverseConverter"/>
     </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="Left" Command="{Binding LastCommand}"/>
+        <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
+    </Window.InputBindings>
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Сохранить" Command="{Binding SaveCommand}"/>
+        </ContextMenu>
+    </Window.ContextMenu>
 
     <Grid RowDefinitions="auto *">        
-        <Grid.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Сохранить" Command="{Binding SaveCommand}"/>
-            </ContextMenu>
-        </Grid.ContextMenu>
+      
         <Grid>
             <ui:SymbolIcon HorizontalAlignment="Right" Margin="0 10 10 0"
                            Symbol="Dismiss48" FontSize="20" MouseUp="SymbolIcon_MouseUp" Foreground="LightGray"/>
@@ -38,7 +43,7 @@
                     Converter={StaticResource booltovisReverseConverter}}">
 
                 <Grid ColumnDefinitions="auto *">
-                    <ui:SymbolIcon Symbol="Dismiss48" FontSize="20" Foreground="LightGray"/>
+                    <ui:SymbolIcon Symbol="Document16" FontSize="20" Foreground="LightGray"/>
                     <ui:TextBlock FontSize="20" Grid.Column="1" Foreground="#aaa" Text="{Binding Attachment.FileName}" />
                 </Grid>
             </Border>
