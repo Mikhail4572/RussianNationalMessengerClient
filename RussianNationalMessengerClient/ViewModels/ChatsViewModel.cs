@@ -44,31 +44,6 @@ public class ChatsViewModel : ViewModelBase
         }
     }
 
-    public ICommand OnSelectionChangedAccount => new RelayCommand(async _ =>
-    {
-        if (SelectedAccount is null)
-            return;
-
-        if (_messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Count == 2 && x.Chat.Members.Contains(SelectedAccount.Username))
-               is ChatViewModel chatVM)
-        {
-            SearchUserContent = null;
-            SelectedChat = chatVM;
-            return;
-        }
-
-        var chat = await _signalR.CreateChatAsync(null, [SelectedAccount.Username, _authState.CurrentUser.Username]);
-
-        if (chat is null)
-            return;
-
-        _messengerState.LoadChats([chat]);
-
-        SearchUserContent = null;
-
-        SelectedChat = _messengerState.GetChat(chat.Id);
-    });
-
     public ChatViewModel? SelectedChat
     {
         get => _messengerState.SelectedChat;
@@ -76,9 +51,6 @@ public class ChatsViewModel : ViewModelBase
         {
             _messengerState.SelectedChat = value;
             OnPropertyChanged(nameof(SelectedChat));
-
-            if (value is not null && value.Messages.Count == 0)
-                _ = LoadMessagesAsync(value);
         }
     }
 
@@ -121,6 +93,37 @@ public class ChatsViewModel : ViewModelBase
             }
         };
     }
+
+    public ICommand ChatSelectionChanged => new RelayCommand(async _ =>
+    {
+        if (SelectedChat is not null && SelectedChat.Messages.Count == 0)
+            await LoadMessagesAsync(SelectedChat);
+    });
+
+    public ICommand OnSelectionChangedAccount => new RelayCommand(async _ =>
+    {
+        if (SelectedAccount is null)
+            return;
+
+        if (_messengerState.Chats.FirstOrDefault(x => x.Chat.Members.Count == 2 && x.Chat.Members.Contains(SelectedAccount.Username))
+               is ChatViewModel chatVM)
+        {
+            SearchUserContent = null;
+            SelectedChat = chatVM;
+            return;
+        }
+
+        var chat = await _signalR.CreateChatAsync([SelectedAccount.Username, _authState.CurrentUser.Username]);
+
+        if (chat is null)
+            return;
+
+        _messengerState.LoadChats([chat]);
+
+        SearchUserContent = null;
+
+        SelectedChat = _messengerState.GetChat(chat.Id);
+    });
 
     public ICommand SearchUserCommand => new RelayCommand(async _ =>
     {

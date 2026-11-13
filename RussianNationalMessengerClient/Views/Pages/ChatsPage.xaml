@@ -34,9 +34,15 @@
                     </ui:AutoSuggestBox>
                 </Grid>
 
-                <ListView Grid.Row="1" ItemsSource="{Binding Chats}" HorizontalContentAlignment="Stretch" 
+                <ListView Grid.Row="1" ItemsSource="{Binding Chats}" HorizontalContentAlignment="Stretch"
                           SelectedItem="{Binding SelectedChat}" Visibility="{Binding VisibilityChatsLV}"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0">
+
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding ChatSelectionChanged}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
 
                     <ListView.ContextMenu>
                         <ContextMenu>

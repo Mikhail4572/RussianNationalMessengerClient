@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using System.Windows.Media.Imaging;
 using System.IO;
-using System.Text;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace RussianNationalMessengerClient.Classes;
 
 public static class ConvertImage
 {
     public static readonly IReadOnlyList<string> SupportedImageTypes =
-    [   
-       // "image/jpg",
+    [
         "image/jpeg",
         "image/png",
         "image/gif",
@@ -65,8 +58,8 @@ public static class ConvertImage
 
     public static byte[]? BitmapImageToBytes(BitmapImage image, string? extension = null)
     {
-
         extension = extension?.ToLower();
+
         try
         {
             BitmapEncoder encoder = extension switch
@@ -82,7 +75,7 @@ public static class ConvertImage
 
             encoder.Frames.Add(BitmapFrame.Create(image));
 
-            using var ms = new MemoryStream();
+            using MemoryStream ms = new();
             encoder.Save(ms);
             return ms.ToArray();
         }

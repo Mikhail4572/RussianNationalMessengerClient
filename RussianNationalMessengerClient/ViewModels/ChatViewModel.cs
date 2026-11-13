@@ -1,16 +1,15 @@
-﻿using Microsoft.Win32;
+﻿using RussianNationalMessengerClient.Services.WindowServices;
+using RussianNationalMessengerClient.Services.RNMApi;
+using RussianNationalMessengerClient.Models.UIModels;
+using RussianNationalMessengerClient.Views.Windows;
 using RussianNationalMessengerClient.Classes;
 using RussianNationalMessengerClient.Models;
-using RussianNationalMessengerClient.Models.UIModels;
-using RussianNationalMessengerClient.Services.RNMApi;
-using RussianNationalMessengerClient.Services.WindowServices;
-using RussianNationalMessengerClient.Views.Windows;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.IO;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
+using Microsoft.Win32;
+using System.Windows;
+using System.IO;
 
 namespace RussianNationalMessengerClient.ViewModels;
 
@@ -45,7 +44,6 @@ public class ChatViewModel : ViewModelBase
             OnPropertyChanged(nameof(SelectedMessage));
         }
     }
-
 
     public string DisplayName
     {
@@ -125,7 +123,6 @@ public class ChatViewModel : ViewModelBase
                 Attachments = message.Attachments?.Select(x => new UIMessageAttachment
                 {
                     Id = x.Id,
-                    MessageId = message.MessageId,
                     ContentType = x.ContentType,
                     FileName = x.FileName,
                     Size = x.Size,
@@ -138,9 +135,7 @@ public class ChatViewModel : ViewModelBase
     public ICommand PasteImageCommand => new RelayCommand(_ =>
     {
         if (Clipboard.ContainsText())
-        {
             Content += Clipboard.GetText();
-        }
     });
 
     public ICommand CopyChatCommand => new RelayCommand(_ =>
@@ -162,7 +157,6 @@ public class ChatViewModel : ViewModelBase
         if (SelectedMessage is not null)
         {
             var isComplete = await _client.DeleteMessage(SelectedMessage.MessageId);
-            return;
         }
     });
 
@@ -194,23 +188,36 @@ public class ChatViewModel : ViewModelBase
             Multiselect = true
         };
 
-        if (ofd.ShowDialog() == true)
+        if (ofd.ShowDialog() != true)
+            return;
+
+
+        if ((ofd.FileNames.Length + LoadAttachments.Count) > 5)
         {
+            MessageBox.Show("Не более 5-ти вложений");
+            AddAttachment.Execute(null);
+            return;
+        }
 
-            if ((ofd.FileNames.Length + LoadAttachments.Count) > 5)
-                return;
+        var fullSize = ofd.FileNames.Concat(LoadAttachments.Select(x => x.FullPath)).Select(x => new FileInfo(x).Length).Sum() / 1024d / 1024d;
 
-            string[] imageEx = [".jpg", ".png"];
+        if (fullSize > 100)
+        {
+            MessageBox.Show("Слишком большой объем");
+            AddAttachment.Execute(null);
+            return;
+        }
 
-            foreach (var item in ofd.FileNames)
+        string[] imageEx = [".jpg", ".jepg", ".png"];
+
+        foreach (var item in ofd.FileNames)
+        {
+            LoadAttachments.Add(new()
             {
-                LoadAttachments.Add(new()
-                {
-                    FullPath = item,
-                    ImageSource = imageEx.Contains(Path.GetExtension(item.ToLower())) ? ConvertImage.GetImageSourceFromPath(item) : null,
-                    Stream = new FileStream(item, FileMode.Open, FileAccess.Read, FileShare.Read)
-                });
-            }
+                FullPath = item,
+                ImageSource = imageEx.Contains(Path.GetExtension(item.ToLower())) ? ConvertImage.GetImageSourceFromPath(item) : null,
+                Stream = new FileStream(item, FileMode.Open, FileAccess.Read, FileShare.Read)
+            });
         }
     });
 
@@ -230,11 +237,10 @@ public class ChatViewModel : ViewModelBase
                         var attachments = await Task.WhenAll(add.Attachments.Select(async x => new UIMessageAttachment
                         {
                             Id = x.Id,
-                            MessageId = add.MessageId,
                             ContentType = x.ContentType,
                             FileName = x.FileName,
                             Size = x.Size,
-                            Preview = x.ContentType.StartsWith("image/") ? ConvertImage.ConvertBytesToBitmapImage(await _client.DownloadFile(add.MessageId, x.Id)) : null
+                            Preview = x.ContentType.StartsWith("image/") ? ConvertImage.ConvertBytesToBitmapImage(await _client.DownloadFile(x.Id)) : null
                         }) ?? []);
 
                         foreach (var item in add.Attachments.Where(x => x.IsImage))

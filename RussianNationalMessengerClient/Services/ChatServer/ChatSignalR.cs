@@ -27,7 +27,7 @@ public partial class ServiceSignalR
         });
     }
 
-    public async Task<Chat?> CreateChatAsync(string groupName, string[] members) =>    
+    public async Task<Chat?> CreateChatAsync(string[] members, string groupName = null) =>
         await Connection.InvokeAsync<Chat?>("CreateChat", groupName, members);
 
     public async Task OnCreateChat(Chat chat)

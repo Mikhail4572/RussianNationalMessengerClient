@@ -10,9 +10,9 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:vm="clr-namespace:RussianNationalMessengerClient.ViewModels"
         mc:Ignorable="d" WindowState="Maximized" WindowStyle="None" 
-        AllowsTransparency="True" MinHeight="350" MinWidth="700"
+        AllowsTransparency="True" MinHeight="350" MinWidth="700" 
         Background="#CC202020" WindowStartupLocation="CenterScreen"
-        Title="AttachmentWindow" Height="450" Width="800">
+        Title="" Height="450" Width="800">
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="booltovisConverter"/>
         <converters:BoolToVisibilityReverseConverter x:Key="booltovisReverseConverter"/>
@@ -20,19 +20,17 @@
     <Window.InputBindings>
         <KeyBinding Key="Left" Command="{Binding LastCommand}"/>
         <KeyBinding Key="Right" Command="{Binding NextCommand}"/>
+        <KeyBinding Key="W" Modifiers="Ctrl" Command="{Binding CloseWindowCommand}" />
     </Window.InputBindings>
     <Window.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Сохранить" Command="{Binding SaveCommand}"/>
+            <MenuItem Header="Копировать" Command="{Binding CopyImageCommand}" 
+                      Visibility="{Binding Attachment.IsImage, Converter={StaticResource booltovisConverter} }"/>
         </ContextMenu>
     </Window.ContextMenu>
 
-    <Grid RowDefinitions="auto *">        
-      
-        <Grid>
-            <ui:SymbolIcon HorizontalAlignment="Right" Margin="0 10 10 0"
-                           Symbol="Dismiss48" FontSize="20" MouseUp="SymbolIcon_MouseUp" Foreground="LightGray"/>
-        </Grid>
+    <Grid RowDefinitions="auto *">
 
         <Grid Grid.RowSpan="2">
             <Image Source="{Binding Attachment.Preview}" Visibility="{Binding Attachment.IsImage, 
@@ -60,12 +58,24 @@
         </ui:SymbolIcon>
 
         <ui:SymbolIcon Margin="0 0 10 0" Symbol="ChevronRight12" Foreground="gray" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.RowSpan="2">
-            <i:Interaction.Triggers>
                 
+            <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseUp">
                     <i:InvokeCommandAction Command="{Binding NextCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ui:SymbolIcon>
+
+        <Grid>
+            <ui:SymbolIcon HorizontalAlignment="Right" Margin="0 10 10 0"
+                           Symbol="Dismiss48" FontSize="20" Foreground="LightGray">
+                
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseUp">
+                        <i:InvokeCommandAction Command="{Binding CloseWindowCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ui:SymbolIcon>
+        </Grid>
     </Grid>
 </Window>

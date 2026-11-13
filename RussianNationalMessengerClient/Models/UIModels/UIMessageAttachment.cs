@@ -11,7 +11,6 @@ public class UIMessageAttachment : ViewModelBase
     public string FileName { get; set; }
     public string ContentType { get; set; }
     public long Size { get; set; }
-    public required string MessageId { get; set; }
     public string SizeFormat
     {
         get

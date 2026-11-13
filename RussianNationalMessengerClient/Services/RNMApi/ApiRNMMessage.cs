@@ -53,8 +53,6 @@ public partial class ApiRNM
             Message? returnMessage = await response.Content.ReadFromJsonAsync<Message>();
 
             return (returnMessage, null);
-
-
         }
         catch (Exception ex)
         {

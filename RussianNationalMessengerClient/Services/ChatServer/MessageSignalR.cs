@@ -41,8 +41,7 @@ public partial class ServiceSignalR
                     ContentType = x.ContentType,
                     FileName = x.FileName,
                     Preview = null,
-                    Size = x.Size,
-                    MessageId = msg.MessageId
+                    Size = x.Size
                 }).OrderBy(x => x.ContentType).ToList()
             });
         });

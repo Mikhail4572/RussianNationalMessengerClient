@@ -10,19 +10,15 @@ public class WindowService : IWindowService
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public WindowService(IServiceProvider serviceProvider)
-    {
+    public WindowService(IServiceProvider serviceProvider) =>
         _serviceProvider = serviceProvider;
-    }
-
+    
     public void Show<TWindow>(object parameter) where TWindow : Window
     {
         TWindow window = _serviceProvider.GetRequiredService<TWindow>();
 
         if (window.DataContext is IParameterReceiver receiver)
-        {
             receiver.Initialize(parameter);
-        }
 
         window.Show();
     }
@@ -32,9 +28,7 @@ public class WindowService : IWindowService
         TWindow window = _serviceProvider.GetRequiredService<TWindow>();
 
         if (window.DataContext is IParameterReceiver receiver)
-        {
             receiver.Initialize(parameter);
-        }
 
         return window.ShowDialog();
     }

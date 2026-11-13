@@ -29,7 +29,7 @@
         <!--Чат-->
         <ListView Grid.Row="1" HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource TransparentListViewItemStyle}"
                   x:Name="LvMessages" ItemsSource="{Binding Messages}" Style="{StaticResource LvNoneErrorTemplate}" ScrollViewer.CanContentScroll="False"
-                  SelectedItem="{Binding SelectedMessage}" BorderThickness="0.5 0 0 0">
+                  SelectedItem="{Binding SelectedMessage}" BorderThickness="1 0 0 0">
 
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
