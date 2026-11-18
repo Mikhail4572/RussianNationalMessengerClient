@@ -10,9 +10,6 @@ public class Account
     [JsonPropertyName("email")]
     public string Email { get; set; }
 
-    [JsonPropertyName("passwordHash")]
-    public string PasswordHash { get; set; }
-
     [JsonPropertyName("createdAt")]
     public DateTime CreatedAt { get; set; }
 

@@ -58,6 +58,7 @@ public partial class App : Application
         services.AddTransient<AuthViewModel>();
 
         services.AddTransient<ChatsViewModel>();
+        services.AddTransient<RegViewModel>();
 
         services.AddTransient<AttachmentWindowViewModel>();
         services.AddTransient<AttachmentWindow>();

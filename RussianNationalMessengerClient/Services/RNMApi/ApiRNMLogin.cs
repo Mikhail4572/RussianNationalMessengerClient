@@ -37,4 +37,47 @@ public partial class ApiRNM
 
         return (loginResponse, null);
     }
+
+    public async Task<RegistrationResponseDto> Register(string username, string email, string password)
+    {
+        var regDto = new
+        {
+            username,
+            email,
+            password
+        };
+
+        var response = await _httpClient.PostAsJsonAsync("Login/register", regDto);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            throw new Exception("status code = " + response.StatusCode + "\nTitle problem = " + problem?.Title);
+        }
+
+        var responseDto = await response.Content.ReadFromJsonAsync<RegistrationResponseDto>();
+
+        return responseDto;
+    }
+
+    public async Task<LoginResponseDto?> VerifyRegistration(string temporaryToken, string code)
+    {
+        var verDto = new
+        {
+            temporaryToken,
+            code
+        };
+
+        var response = await _httpClient.PostAsJsonAsync("Login/verify-registration", verDto);
+     
+        if (!response.IsSuccessStatusCode)
+        {
+            var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            throw new Exception("status code = " + response.StatusCode + "\nTitle problem = " + problem?.Title);
+        }
+
+        var loginDto = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+
+        return loginDto;
+    }
 }

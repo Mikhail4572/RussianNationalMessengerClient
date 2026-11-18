@@ -64,6 +64,9 @@ public class AuthViewModel : ViewModelBase
     },
         _ => !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password));
 
+    public ICommand ToRegPageCommand => new RelayCommand(_ =>
+        _navigation.NavigateTo<RegViewModel>());
+
     public string UserName
     {
         get;

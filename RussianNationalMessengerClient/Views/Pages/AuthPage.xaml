@@ -8,13 +8,13 @@
       xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="400">
+      d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid Background="white" ColumnDefinitions="1*, 2.5*, 1*"
           RowDefinitions="auto, *">
       
         <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
-              RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto">
+              RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto, auto">
             <Label Margin="0 0 0 5" Content="Вход" FontSize="30" HorizontalContentAlignment="Center"/>
             <Label Margin="0 0 0 5" FontSize="15" Grid.Row="1" Content="Логин"/>
             <TextBox Margin="0 0 0 5" Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2"/>
@@ -25,8 +25,9 @@
                             Grid.Row="4" RevealButtonEnabled="True"/>
             
             <Button Command="{Binding LoginCommand}" Content="Войти" Grid.Row="5" HorizontalAlignment="Center"/>
-            <ProgressBar Value="{Binding Value}" Maximum="100" Minimum="0" Height="10" Grid.Row="6" Margin="0 0 0 5"/>
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="red" TextWrapping="Wrap" Grid.Row="7" />
+            <Button Command="{Binding ToRegPageCommand}" Content="Регистрация" Grid.Row="6" HorizontalAlignment="Center"/>
+            <ProgressBar Value="{Binding Value}" Maximum="100" Minimum="0" Height="10" Grid.Row="7" Margin="0 0 0 5"/>
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="red" TextWrapping="Wrap" Grid.Row="8" />
         </Grid>
 
     </Grid>

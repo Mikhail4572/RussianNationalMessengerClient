@@ -1,30 +1,31 @@
-﻿using RussianNationalMessengerClient.Models.UIModels;
-using RussianNationalMessengerClient.Classes;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Policy;
-using System.Windows.Media;
-using System.Net.Http.Json;
-using System.Net.Http;
-using System.Text.Json;
-using System.Text;
-using System.IO;
-using System;
-
-namespace RussianNationalMessengerClient.Services.RNMApi;
+﻿namespace RussianNationalMessengerClient.Services.RNMApi;
 
 public partial class ApiRNM
 {
     public async Task<byte[]?> DownloadFile(string attachmentId)
     {
-        var response = await _httpClient.GetAsync($"File/getfile/{attachmentId}");
+        try
+        {
+            _httpClient.Timeout = TimeSpan.FromMinutes(5);
 
-        if (!response.IsSuccessStatusCode)
+            var response = await _httpClient.GetAsync($"File/getfile/{attachmentId}");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadAsByteArrayAsync();
+        }
+        catch
+        {
             return null;
-
-        return await response.Content.ReadAsByteArrayAsync();
+        }
+        finally
+        {
+            _httpClient.Timeout = TimeSpan.FromSeconds(30);
+        }
     }
-
+    
+    /*
     public async Task DownloadSaveBigFile(string messageId, string attachmentId, string filePath, IProgress<double>? progress = null, CancellationToken token = default)
     {
         var response = await _httpClient.GetAsync($"File/getfile/{attachmentId}", HttpCompletionOption.ResponseHeadersRead, token);
@@ -53,4 +54,5 @@ public partial class ApiRNM
             }
         }
     }
+    */
 }

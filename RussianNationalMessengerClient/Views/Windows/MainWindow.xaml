@@ -16,6 +16,13 @@
             <views:AuthPage/>
         </DataTemplate>
         
+
+        <DataTemplate
+            DataType="{x:Type viewModels:RegViewModel}">
+
+            <views:RegPage/>
+        </DataTemplate>
+        
         <DataTemplate
             DataType="{x:Type viewModels:ChatsViewModel}">
 
