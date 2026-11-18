@@ -3,14 +3,14 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:local="clr-namespace:RussianNationalMessengerClient.Views.Pages"
       xmlns:vm="clr-namespace:RussianNationalMessengerClient.ViewModels"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" Background="white"
       d:DesignHeight="450" d:DesignWidth="800">
     
     <Grid  ColumnDefinitions="1*, 2.5*, 1*">
-        <Grid RowDefinitions="auto auto auto auto auto" VerticalAlignment="Center" Grid.Column="1">
+        <Grid RowDefinitions="auto auto auto auto auto auto auto" VerticalAlignment="Center" Grid.Column="1">
             <Label Content="Регистрация" FontSize="30" HorizontalContentAlignment="Center"/>
             <Label Margin="0 0 0 5" FontSize="15" Grid.Row="1" Content="Логин"/>
             <TextBox Margin="0 0 0 5" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2"/>
@@ -20,6 +20,8 @@
                   Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                   Grid.Row="4" RevealButtonEnabled="True"/>
 
+            <Button Grid.Row="5" Content="Зарегистрироваться" HorizontalAlignment="Center" Command="{Binding RegCommand}"/>
+            <ui:HyperlinkButton Margin="0 5" Command="{Binding ToAuthPageCommand}" Content="Назад" Grid.Row="6" HorizontalAlignment="Center"/>
         </Grid>
     </Grid>
 </UserControl>

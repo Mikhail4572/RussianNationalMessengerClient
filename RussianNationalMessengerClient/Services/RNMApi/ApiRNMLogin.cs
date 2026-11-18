@@ -10,6 +10,9 @@ namespace RussianNationalMessengerClient.Services.RNMApi;
 
 public partial class ApiRNM
 {
+    private RegistrationResponseDto _responseDto;
+
+
     public async Task<(LoginResponseDto? loginResponseDto, ProblemDetails? problem)> Login(string username, string password)
     {
         LoginDto login = new()
@@ -57,14 +60,22 @@ public partial class ApiRNM
 
         var responseDto = await response.Content.ReadFromJsonAsync<RegistrationResponseDto>();
 
+        if (responseDto is null)
+            throw new ArgumentNullException(nameof(responseDto));
+
+        _responseDto = responseDto;
+
         return responseDto;
     }
 
-    public async Task<LoginResponseDto?> VerifyRegistration(string temporaryToken, string code)
+    public async Task<LoginResponseDto?> VerifyRegistration(string code)
     {
+        if (_responseDto is null or { TemporaryToken: null or "" })
+            throw new ArgumentNullException(nameof(_responseDto));
+
         var verDto = new
         {
-            temporaryToken,
+            _responseDto.TemporaryToken,
             code
         };
 
@@ -77,6 +88,8 @@ public partial class ApiRNM
         }
 
         var loginDto = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+
+        _responseDto = null;
 
         return loginDto;
     }

@@ -54,8 +54,9 @@ public partial class App : Application
         services.AddSingleton<IWindowService, WindowService>();
 
         // Transient
-
+         
         services.AddTransient<AuthViewModel>();
+        services.AddTransient<VerifyRegViewModel>();
 
         services.AddTransient<ChatsViewModel>();
         services.AddTransient<RegViewModel>();

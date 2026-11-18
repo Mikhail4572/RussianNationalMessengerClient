@@ -25,10 +25,9 @@
                             Grid.Row="4" RevealButtonEnabled="True"/>
             
             <Button Command="{Binding LoginCommand}" Content="Войти" Grid.Row="5" HorizontalAlignment="Center"/>
-            <Button Command="{Binding ToRegPageCommand}" Content="Регистрация" Grid.Row="6" HorizontalAlignment="Center"/>
+            <ui:HyperlinkButton Margin="0 5" Command="{Binding ToRegPageCommand}" Content="Регистрация" Grid.Row="6" HorizontalAlignment="Center"/>
             <ProgressBar Value="{Binding Value}" Maximum="100" Minimum="0" Height="10" Grid.Row="7" Margin="0 0 0 5"/>
             <TextBlock Text="{Binding ErrorMessage}" Foreground="red" TextWrapping="Wrap" Grid.Row="8" />
         </Grid>
-
     </Grid>
 </UserControl>

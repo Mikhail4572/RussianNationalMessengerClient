@@ -32,11 +32,11 @@ public class AuthViewModel : ViewModelBase
 
             progress.Report(10);
 
-            var response = await _service.AuthorizationAsync(loginResult.loginResponseDto, progress);
+            await _service.AuthorizationAsync(loginResult.loginResponseDto, progress);
 
-            _authState.Token = response.Token;
+            _authState.Token = loginResult.loginResponseDto.Token;
 
-            _authState.CurrentUser = response.User;
+            _authState.CurrentUser = loginResult.loginResponseDto.User;
 
             await _service.Connection.InvokeAsync("GetChats");
 

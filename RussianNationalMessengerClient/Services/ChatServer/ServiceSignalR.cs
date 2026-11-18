@@ -19,18 +19,16 @@ public partial class ServiceSignalR
     public ServiceSignalR(MessengerState messengerState) =>
         _messengerState = messengerState;
 
-    public async Task<LoginResponseDto> AuthorizationAsync(LoginResponseDto loginResponse, IProgress<int>? progress = null)
+    public async Task AuthorizationAsync(LoginResponseDto loginResponse, IProgress<int>? progress = null)
     {
         if (string.IsNullOrEmpty(loginResponse.Token))
             throw new ArgumentNullException(nameof(loginResponse.Token) + " is null or empty");
 
         progress?.Report(10);
 
-        progress?.Report(40);
-
         Connection = await ConnectToHub(loginResponse.Token);
 
-        return loginResponse;
+        progress?.Report(40);
     }
 
     private async Task<HubConnection> ConnectToHub(string token)

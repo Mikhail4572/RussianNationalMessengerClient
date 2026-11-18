@@ -37,7 +37,10 @@ public partial class ServiceSignalR
             _messengerState.LoadChats([chat]);
         });
     }
+
     public async Task DeleteChatAsync(string chatId) =>
         await Connection.SendAsync("DeleteChat", chatId);
 
+    public async Task GetChatsAsync() =>
+        await Connection.SendAsync("GetChats");
 }

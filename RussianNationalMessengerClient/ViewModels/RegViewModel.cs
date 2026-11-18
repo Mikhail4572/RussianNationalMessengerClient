@@ -51,21 +51,23 @@ public class RegViewModel : ViewModelBase
         Email = Email?.Trim();
         Password = Password?.Trim();
 
+        if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(Email))
+            return;
+
         try
         {
-            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(Email))
-                return;
+            await _client.Register(Username, Email, Password);
 
-            var responseDto = (await _client.Register(Username, Email, Password)) ?? throw new ArgumentNullException("Method" + nameof(_client.Register) + " return null");
-
-
-//            _navigation.NavigateTo
+            _navigation.NavigateTo<VerifyRegViewModel>();
         }
         catch (Exception ex) 
         {
             MessageBox.Show(ex.Message);
         }
     });
+
+    public ICommand ToAuthPageCommand => new RelayCommand(_ =>
+        _navigation.NavigateTo<AuthViewModel>());
 
     public RegViewModel(ApiRNM client, NavigationService navigation)
     {
